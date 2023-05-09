@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
 
 /**
  * TODO Sprint add-controllers.
@@ -9,4 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/items")
 public class ItemController {
+    private final ItemService itemService;
+    public Item createItem(Item item){
+        return itemService.createItem(item);
+    }
 }
