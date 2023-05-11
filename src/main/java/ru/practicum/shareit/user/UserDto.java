@@ -1,10 +1,15 @@
 package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -12,10 +17,15 @@ import java.io.Serializable;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class UserDto implements Serializable {
-    private final long id;
+@AllArgsConstructor
+@NoArgsConstructor(force = true)
+public class UserDto  {
+    @Setter
+    private long id;
     @NotBlank
+    @NotNull
     private final String name;
+    @NotNull
     @Email
-    private final String email;
+    private String email;
 }

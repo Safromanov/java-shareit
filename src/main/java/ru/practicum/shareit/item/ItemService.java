@@ -2,37 +2,37 @@ package ru.practicum.shareit.item;
 
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import org.springframework.validation.annotation.Validated;
+import ru.practicum.shareit.errorhandler.excaption.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    public ItemDto createItem(@Valid Item item, long userId){
+    public ItemDto createItem( @Valid ItemDto itemDto, long userId){
         User owner;
-
         try {
             owner  = userRepository.getById(userId);
             owner.getName();
-        } catch (Exception e){
-            throw new RuntimeException("User dont found");
+        } catch (EntityNotFoundException e){
+            throw new NotFoundException("User dont found");
         }
-
-
+        Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
         itemRepository.save(item);
-        return ItemMapper.toItemDto(item);
+        itemDto.setId(item.getId());
+        return itemDto;
     }
 
     public ItemDto getById(long id){

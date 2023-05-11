@@ -1,12 +1,15 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * TODO Sprint add-controllers.
@@ -15,6 +18,8 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Table(name = "items")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +31,7 @@ public class Item {
 
     private boolean available;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
 

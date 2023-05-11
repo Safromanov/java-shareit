@@ -1,9 +1,8 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.service.UserService;
 
 /**
  * TODO Sprint add-controllers.
@@ -15,17 +14,18 @@ public class UserController {
 
     private final UserService userService;
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@RequestBody UserDto user){
         return userService.createUser(user);
     }
 
     @PatchMapping
     public UserDto updateUser(@RequestBody UserDto user){
-        return userService.createUser(user);
+        return userService.updateUser(user);
     }
 
     @GetMapping("/{userId}")
-    public User getById(@PathVariable long userId){
+    public UserDto getById(@PathVariable long userId){
         return userService.getById(userId);
     }
 }
