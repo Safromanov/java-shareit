@@ -2,8 +2,8 @@ package ru.practicum.shareit.item.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
-import org.hibernate.validator.constraints.UniqueElements;
-import ru.practicum.shareit.item.valid.UniqueLogin;
+import ru.practicum.shareit.user.User;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -14,16 +14,20 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotBlank
-    @UniqueLogin
     private String name;
     @NotBlank
     private String description;
 
     private boolean available;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User owner;
 
 }
