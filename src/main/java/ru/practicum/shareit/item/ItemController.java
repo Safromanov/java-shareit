@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -17,13 +17,38 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto createItem(@RequestBody ItemDto item, @RequestHeader(USER_ID_HEADER) Long userId){
+    public ItemDto createItem(@RequestBody ItemDto item, @RequestHeader(USER_ID_HEADER) long userId){
         return itemService.createItem(item,  userId);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable long itemId){
         return itemService.getById(itemId);
+    }
+
+    @GetMapping("/{itemId}")
+    public List<ItemDto> findByItemName(@PathVariable String itemName){
+        return itemService.findByItemNameOrDesc(itemName);
+    }
+    @PatchMapping("/{itemId}")
+    public ItemDto updateItem(@RequestBody ItemDto itemDto,
+                              @PathVariable long itemId,
+                              @RequestHeader(USER_ID_HEADER) long userId){
+        return itemService.updateUser(itemDto, itemId, userId);
+    }
+
+
+
+    @GetMapping
+    public List<ItemDto> getAllItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId){
+        return itemService.getAllItemsByUserId(userId);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{itemId}")
+    public void deleteUserById( @PathVariable long itemId,
+                                @RequestHeader(USER_ID_HEADER)long userId) {
+        itemService.deleteItemById(itemId);
     }
 
 }

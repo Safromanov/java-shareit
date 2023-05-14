@@ -15,9 +15,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ItemDto {
     private long id;
-    @NotBlank
+
     private final String name;
-    @NotBlank
+
     private final String description;
     @NotNull
     private final Boolean available;

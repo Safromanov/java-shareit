@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.sun.istack.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,8 +10,7 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
+import javax.validation.constraints.Null;
 
 /**
  * A DTO for the {@link User} entity
@@ -19,13 +19,15 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class UserDto  {
+public class UserDto {
     @Setter
     private long id;
-    @NotBlank
-    @NotNull
+  //  @Nullable
+
+  //  @NotNull(groups = CreateUser.class)
     private final String name;
-    @NotNull
+
     @Email
+   // @NotNull(groups = CreateUser.class)
     private String email;
 }

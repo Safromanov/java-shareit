@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 
@@ -28,11 +29,14 @@ public class Item {
     private String name;
     @NotBlank
     private String description;
-
+    @NotNull
     private boolean available;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ItemRequest request;
 
 }
