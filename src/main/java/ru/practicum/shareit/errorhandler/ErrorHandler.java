@@ -28,14 +28,14 @@ public class ErrorHandler {
     @ResponseBody
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public List<String> NotFoundException(NotFoundException e) {
+    public List<String> notFoundException(NotFoundException e) {
         return List.of(e.getMessage());
     }
 
     @ResponseBody
     @ExceptionHandler(EmptyStringException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public List<String> EmptyStringException(EmptyStringException e) {
+    public List<String> emptyStringException(EmptyStringException e) {
         return List.of(e.getMessage());
     }
 

@@ -45,8 +45,8 @@ public class ItemController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{itemId}")
-    public void deleteUserById( @PathVariable long itemId,
-                                @RequestHeader(USER_ID_HEADER)long userId) {
+    public void deleteUserById(@PathVariable long itemId,
+                               @RequestHeader(USER_ID_HEADER) long userId) {
         itemService.deleteItemById(itemId);
     }
 

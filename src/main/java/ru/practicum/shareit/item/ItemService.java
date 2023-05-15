@@ -24,8 +24,8 @@ public class ItemService {
     private final UserRepository userRepository;
 
     @Validated(Create.class)
-    public ItemDto createItem( @Valid ItemDto itemDto, long userId){
-        User owner  = userRepository.findById(userId)
+    public ItemDto createItem(@Valid ItemDto itemDto, long userId) {
+        User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
 
         Item item = ItemMapper.toItem(itemDto);
@@ -53,7 +53,7 @@ public class ItemService {
     public void deleteItemById(long id) {
         try {
             itemRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Item ID dont found");
         }
     }

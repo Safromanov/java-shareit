@@ -15,30 +15,31 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestBody UserDto user){
+    public UserDto createUser(@RequestBody UserDto user) {
         return userService.createUser(user);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@RequestBody UserDto user, @PathVariable long userId){
+    public UserDto updateUser(@RequestBody UserDto user, @PathVariable long userId) {
         return userService.updateUser(user, userId);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{userId}")
-    public void deleteUserById( @PathVariable long userId){
+    public void deleteUserById(@PathVariable long userId) {
         userService.deleteUserById(userId);
     }
 
     @GetMapping("/{userId}")
-    public UserDto getById(@PathVariable long userId){
+    public UserDto getById(@PathVariable long userId) {
         return userService.getById(userId);
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers(){
+    public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
 }
