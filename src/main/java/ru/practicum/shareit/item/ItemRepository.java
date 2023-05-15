@@ -7,18 +7,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    Item findByNameLikeOrDescriptionLikeAllIgnoreCase(String name, String description);
-    @Query("select i from Item i where upper(i.name) like upper(?1)")
-    List<Item> findByNameLikeIgnoreCase(String name);
 
-    Item findByNameIgnoreCaseAndDescriptionIgnoreCase(String name, String description);
+    @Query("select i from Item i " +
+            "where ((upper(i.name) like upper(concat('%', ?1, '%')) " +
+            "or upper(i.description) like upper(concat('%', ?1, '%'))))" +
+            "and i.available = true")
+    List<Item> findByNameOrDescription(String str);
 
-//    @Query("select i from Item i where upper(i.name) = upper(?1) or upper(i.name) = upper(?2)")
-//    List<Item> findByNameIgnoreCaseOrNameIgnoreCase(String name, String name1);
+    @Query("select i from Item i where i.id = ?1 and i.owner.id = ?2")
+    Optional<Item> findByIdAndOwnerId(long idItem, long idOwner);
 
+    @Query("select i from Item i where i.owner.id = ?1")
+    List<Item> getAllByOwnerId(long idOwner);
 
-
-    Optional<Item> findByIdAndOwner_Id(long idItem, long idOwner);
-
-    List<Item> getAllByOwner_Id(long idOwner);
 }

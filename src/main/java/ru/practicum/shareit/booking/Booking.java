@@ -18,8 +18,9 @@ public class Booking {
     private Long id;
 
     private LocalDateTime  start;
+    @Column(name = "end_booking")
     private LocalDateTime end;
-    @OneToOne
+    @ManyToOne
     private Item item;
     @ManyToOne
     private User booker;

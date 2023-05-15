@@ -17,31 +17,30 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto createItem(@RequestBody ItemDto item, @RequestHeader(USER_ID_HEADER) long userId){
-        return itemService.createItem(item,  userId);
+    public ItemDto createItem(@RequestBody ItemDto item, @RequestHeader(USER_ID_HEADER) long userId) {
+        return itemService.createItem(item, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getById(@PathVariable long itemId){
+    public ItemDto getById(@PathVariable long itemId) {
         return itemService.getById(itemId);
     }
 
-    @GetMapping("/{itemId}")
-    public List<ItemDto> findByItemName(@PathVariable String itemName){
-        return itemService.findByItemNameOrDesc(itemName);
+    @GetMapping("/search")
+    public List<ItemDto> findByItemName(@RequestParam(value = "text", required = false) String str) {
+        return itemService.findByItemNameOrDesc(str);
     }
+
+    @GetMapping
+    public List<ItemDto> getAllItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
+        return itemService.getAllItemsByUserId(userId);
+    }
+
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestBody ItemDto itemDto,
                               @PathVariable long itemId,
-                              @RequestHeader(USER_ID_HEADER) long userId){
+                              @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.updateUser(itemDto, itemId, userId);
-    }
-
-
-
-    @GetMapping
-    public List<ItemDto> getAllItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId){
-        return itemService.getAllItemsByUserId(userId);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

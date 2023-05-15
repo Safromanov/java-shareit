@@ -1,9 +1,11 @@
-package ru.practicum.shareit.errorhandler.excaption;
+package ru.practicum.shareit.errorhandler.exception;
 
 
 
 public class AlreadyExistException extends RuntimeException {
+
     public AlreadyExistException(String message) {
         super(message);
     }
+
 }

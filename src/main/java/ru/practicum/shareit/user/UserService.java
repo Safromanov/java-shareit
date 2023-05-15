@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import ru.practicum.shareit.errorhandler.excaption.AlreadyExistException;
-import ru.practicum.shareit.errorhandler.excaption.NotFoundException;
+import ru.practicum.shareit.errorhandler.exception.AlreadyExistException;
+import ru.practicum.shareit.errorhandler.exception.NotFoundException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -26,7 +26,6 @@ public class UserService {
         userDto.setId(user.getId());
         return userDto;
     }
-
 
     public UserDto updateUser(@Valid UserDto userDto, long userId) {
         User user = userRepository.findById(userId)
@@ -53,15 +52,14 @@ public class UserService {
         } catch (EmptyResultDataAccessException e){
             throw new NotFoundException("User ID dont found");
         }
-
     }
 
     public List<UserDto> getAllUsers(){
         return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 
-
     private long countByEmail(String email) {
         return userRepository.countByEmail(email);
     }
+
 }

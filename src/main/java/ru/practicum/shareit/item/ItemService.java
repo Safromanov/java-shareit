@@ -5,11 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import ru.practicum.shareit.errorhandler.excaption.NotFoundException;
+import ru.practicum.shareit.errorhandler.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    @Validated(Create.class)
     public ItemDto createItem( @Valid ItemDto itemDto, long userId){
         User owner  = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
@@ -36,7 +38,7 @@ public class ItemService {
     }
 
     public ItemDto updateUser(@Valid ItemDto itemDto, long itemId, long userId) {
-        Item item = itemRepository.findByIdAndOwner_Id(itemId, userId)
+        Item item = itemRepository.findByIdAndOwnerId(itemId, userId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
         if (itemDto.getName() != null)
             item.setName(itemDto.getName());
@@ -54,19 +56,19 @@ public class ItemService {
         } catch (EmptyResultDataAccessException e){
             throw new NotFoundException("Item ID dont found");
         }
-
     }
 
-    public List<ItemDto> getAllItemsByUserId(long id){
-        return itemRepository.getAllByOwner_Id(id).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    public List<ItemDto> getAllItemsByUserId(long id) {
+        return itemRepository.getAllByOwnerId(id).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    public ItemDto getById(long id){
+    public ItemDto getById(long id) {
         return ItemMapper.toItemDto(itemRepository.getById(id));
     }
 
-    public List<ItemDto> findByItemNameOrDesc(String itemName){
-        return itemRepository.findByNameLikeIgnoreCase(itemName)
+    public List<ItemDto> findByItemNameOrDesc(String str) {
+        if (str.isBlank()) return new ArrayList<>();
+        return itemRepository.findByNameOrDescription(str)
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 

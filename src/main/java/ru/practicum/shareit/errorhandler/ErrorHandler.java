@@ -1,13 +1,13 @@
 package ru.practicum.shareit.errorhandler;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.errorhandler.excaption.AlreadyExistException;
-import ru.practicum.shareit.errorhandler.excaption.NotFoundException;
+import ru.practicum.shareit.errorhandler.exception.AlreadyExistException;
+import ru.practicum.shareit.errorhandler.exception.EmptyStringException;
+import ru.practicum.shareit.errorhandler.exception.NotFoundException;
 import ru.practicum.shareit.errorhandler.violation.ValidationErrorResponse;
 import ru.practicum.shareit.errorhandler.violation.Violation;
 
@@ -17,17 +17,25 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ErrorHandler {
+
     @ResponseBody
     @ExceptionHandler(AlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public  List<String> handleValidationError(final AlreadyExistException e) {
+    public List<String> handleValidationError(final AlreadyExistException e) {
         return List.of(e.getMessage());
     }
 
     @ResponseBody
     @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public List<String> NotFoundException(NotFoundException e) {
+        return List.of(e.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(EmptyStringException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public List<String> NotFoundException(NotFoundException e){
+    public List<String> EmptyStringException(EmptyStringException e) {
         return List.of(e.getMessage());
     }
 
@@ -47,4 +55,5 @@ public class ErrorHandler {
                 .collect(Collectors.toList());
         return new ValidationErrorResponse(violations);
     }
+
 }
