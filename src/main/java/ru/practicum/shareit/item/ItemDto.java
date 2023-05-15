@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @NoArgsConstructor(force = true)
