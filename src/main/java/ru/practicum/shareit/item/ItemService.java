@@ -66,7 +66,9 @@ public class ItemService {
             return itemRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Item ID dont found"));
         } catch (RuntimeException e) {
-            throw new RuntimeException(e.getClass() + e.getMessage() + "\n" + Arrays.stream(e.getStackTrace()).map(a -> "\n" + a.toString() + "\n").collect(Collectors.joining()));
+            throw new RuntimeException(e.getClass()
+                    + e.getMessage() + "\n"
+                    + Arrays.stream(e.getStackTrace()).map(a -> "\n" + a.toString() + "\n").collect(Collectors.joining()));
         }
     }
 
