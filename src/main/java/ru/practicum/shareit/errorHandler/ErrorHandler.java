@@ -31,7 +31,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.ALREADY_REPORTED)
     public String handleRuntimeException(final RuntimeException e) {
         log.warn(e.getMessage());
-        return e.getLocalizedMessage();
+        return e.getMessage();
     }
 
     @ExceptionHandler(NotFoundException.class)
