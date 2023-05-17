@@ -61,7 +61,8 @@ public class ItemService {
     }
 
     public ItemDto getById(long id) {
-        return ItemMapper.toItemDto(itemRepository.getById(id));
+        return ItemMapper.toItemDto(itemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Item ID dont found")));
     }
 
     public List<ItemDto> findByItemNameOrDesc(String str) {
