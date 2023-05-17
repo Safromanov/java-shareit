@@ -27,16 +27,23 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.ALREADY_REPORTED)
+    public String handleRuntimeException(final RuntimeException e) {
+        log.warn(e.getMessage());
+        return e.getLocalizedMessage();
+    }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse notFoundException(NotFoundException e) {
+    public ErrorResponse handleNotFoundException(NotFoundException e) {
         log.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse onMethodArgumentNotValidException(
+    public ValidationErrorResponse handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e
     ) {
         final List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
@@ -48,7 +55,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ValidationErrorResponse onConstraintValidationException(
+    public ValidationErrorResponse handleConstraintValidationException(
             ConstraintViolationException e
     ) {
         final List<Violation> violations = e.getConstraintViolations().stream()
