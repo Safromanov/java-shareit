@@ -21,7 +21,6 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-
     public ItemDto createItem(ItemDto itemDto, long userId) {
 
         User owner = userRepository.findById(userId)
