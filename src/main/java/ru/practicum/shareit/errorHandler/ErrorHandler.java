@@ -27,13 +27,6 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.ALREADY_REPORTED)
-    public String handleRuntimeException(final RuntimeException e) {
-        log.warn(e.getMessage());
-        return e.getMessage();
-    }
-
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e) {
