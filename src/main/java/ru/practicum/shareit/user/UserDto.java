@@ -1,19 +1,22 @@
 package ru.practicum.shareit.user;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.marker.Create;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
 public class UserDto {
     private long id;
+    @NotBlank(groups = Create.class)
     private final String name;
     @Email
+    @NotNull(groups = Create.class)
     private String email;
 }

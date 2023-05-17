@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS items
     request_id  BIGINT,
     CONSTRAINT pk_items PRIMARY KEY (id)
 );
+
 CREATE TABLE IF NOT EXISTS item_request
 (
     id           BIGINT AUTO_INCREMENT NOT NULL,
@@ -24,7 +25,6 @@ CREATE TABLE IF NOT EXISTS item_request
     created      TIMESTAMP,
     CONSTRAINT pk_itemrequest PRIMARY KEY (id)
 );
-
 
 CREATE TABLE IF NOT EXISTS booking
 (

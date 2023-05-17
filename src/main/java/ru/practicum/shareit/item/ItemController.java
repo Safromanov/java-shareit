@@ -2,14 +2,18 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.marker.Create;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -17,7 +21,8 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto createItem(@RequestBody ItemDto item, @RequestHeader(USER_ID_HEADER) long userId) {
+    @Validated(Create.class)
+    public ItemDto createItem(@RequestBody @Valid ItemDto item, @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.createItem(item, userId);
     }
 
@@ -37,7 +42,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestBody ItemDto itemDto,
+    public ItemDto updateItem(@RequestBody @Valid ItemDto itemDto,
                               @PathVariable long itemId,
                               @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.updateUser(itemDto, itemId, userId);
@@ -49,5 +54,4 @@ public class ItemController {
                                @RequestHeader(USER_ID_HEADER) long userId) {
         itemService.deleteItemById(itemId);
     }
-
 }

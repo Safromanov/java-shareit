@@ -1,7 +1,5 @@
 package ru.practicum.shareit.user;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +17,6 @@ import javax.validation.constraints.NotNull;
 @Table(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class User {
     @Id
     @Column(name = "user_id")
@@ -29,5 +26,6 @@ public class User {
     private String name;
     @Email
     @NotNull
+    @Column(unique = true)
     private String email;
 }

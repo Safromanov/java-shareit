@@ -2,42 +2,39 @@ package ru.practicum.shareit.item;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import ru.practicum.shareit.errorhandler.exception.NotFoundException;
+import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Validated
 public class ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    @Validated(Create.class)
-    public ItemDto createItem(@Valid ItemDto itemDto, long userId) {
+
+    public ItemDto createItem(ItemDto itemDto, long userId) {
+
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
-
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
-
-        itemRepository.save(item);
+        item = itemRepository.save(item);
         itemDto.setId(item.getId());
-
+        log.info("Created item - {}", itemDto);
         return itemDto;
     }
 
-    public ItemDto updateUser(@Valid ItemDto itemDto, long itemId, long userId) {
+    public ItemDto updateUser(ItemDto itemDto, long itemId, long userId) {
         Item item = itemRepository.findByIdAndOwnerId(itemId, userId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
         if (itemDto.getName() != null)
@@ -47,12 +44,14 @@ public class ItemService {
         if (itemDto.getAvailable() != null)
             item.setAvailable(itemDto.getAvailable());
         itemRepository.save(item);
+        log.info("Updated item - {}", itemDto);
         return ItemMapper.toItemDto(item);
     }
 
     public void deleteItemById(long id) {
         try {
             itemRepository.deleteById(id);
+            log.info("Deleted item with id - {}", id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Item ID dont found");
         }
@@ -71,5 +70,4 @@ public class ItemService {
         return itemRepository.findByNameOrDescription(str)
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
-
 }

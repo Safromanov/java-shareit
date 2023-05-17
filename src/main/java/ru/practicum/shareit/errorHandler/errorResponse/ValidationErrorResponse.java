@@ -1,4 +1,4 @@
-package ru.practicum.shareit.errorhandler.violation;
+package ru.practicum.shareit.errorHandler.errorResponse;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,5 +11,4 @@ import java.util.List;
 public class ValidationErrorResponse {
 
     private final List<Violation> violations;
-
 }

@@ -13,7 +13,7 @@ public class ItemMapper {
 
     public static Item toItem(ItemDto item) {
         return new Item(
-                item.getId(),
+                -1,
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),

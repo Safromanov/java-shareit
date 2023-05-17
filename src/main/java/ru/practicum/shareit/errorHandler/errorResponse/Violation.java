@@ -1,4 +1,4 @@
-package ru.practicum.shareit.errorhandler.violation;
+package ru.practicum.shareit.errorHandler.errorResponse;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,5 +9,4 @@ public class Violation {
 
     private final String fieldName;
     private final String message;
-
 }

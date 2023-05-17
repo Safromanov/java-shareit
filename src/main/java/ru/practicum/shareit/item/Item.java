@@ -1,6 +1,6 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Table(name = "items")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,11 +27,10 @@ public class Item {
     @NotNull
     private boolean available;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User owner;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private ItemRequest request;
-
 }
