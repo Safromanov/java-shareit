@@ -32,7 +32,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.ALREADY_REPORTED)
     public String handleRuntimeException(final RuntimeException e) {
         log.warn(e.getMessage());
-        return Arrays.stream(e.getStackTrace()).map(a -> "\n" + a.toString() + "\n").toString();
+        return Arrays.stream(e.getStackTrace()).map(a -> "\n" + a.toString() + "\n").collect(Collectors.joining());
     }
 
     @ExceptionHandler(NotFoundException.class)
