@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,7 @@ public class ItemService {
             return itemRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Item ID dont found"));
         } catch (RuntimeException e) {
-            throw new RuntimeException(e.fillInStackTrace());
+            throw new RuntimeException(e.getClass() + e.getMessage() + "\n" + Arrays.stream(e.getStackTrace()).map(a -> "\n" + a.toString() + "\n").collect(Collectors.joining()));
         }
     }
 

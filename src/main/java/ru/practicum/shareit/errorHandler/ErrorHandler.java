@@ -13,7 +13,6 @@ import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 
 import javax.validation.ConstraintViolationException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.ALREADY_REPORTED)
     public String handleRuntimeException(final RuntimeException e) {
         log.warn(e.getMessage());
-        return Arrays.stream(e.getStackTrace()).map(a -> "\n" + a.toString() + "\n").collect(Collectors.joining());
+        return e.getMessage();
     }
 
     @ExceptionHandler(NotFoundException.class)
