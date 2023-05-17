@@ -60,14 +60,13 @@ public class ItemService {
         return itemRepository.getAllByOwnerId(id).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
-    public ItemDto getById(long id) {
+    public Item getById(long id) {
         try {
-            return ItemMapper.toItemDto(itemRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("Item ID dont found")));
+            return itemRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Item ID dont found"));
         } catch (RuntimeException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e.fillInStackTrace());
         }
-
     }
 
     public List<ItemDto> findByItemNameOrDesc(String str) {
