@@ -27,12 +27,11 @@ public class Item {
     @NotNull
     private boolean available;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
 
     @ManyToOne
-    //   @Null
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 }

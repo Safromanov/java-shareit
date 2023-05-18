@@ -7,11 +7,9 @@ package ru.practicum.shareit.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.User;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,7 +22,8 @@ public class ItemRequest {
     private Long id;
 
     private String description;
-    //    @ManyToOne
-//    private User requestor;
+    @ManyToOne
+    @JoinColumn(name = "requestor_id")
+    private User requestor;
     private LocalDateTime created;
 }
