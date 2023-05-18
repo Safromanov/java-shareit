@@ -27,7 +27,7 @@ public class Item {
     @NotNull
     private boolean available;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne//(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User owner;
 
