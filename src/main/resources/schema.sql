@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS item_request
 (
     id           BIGINT AUTO_INCREMENT NOT NULL,
     description  VARCHAR(255),
-    requestor_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
+--     requestor_id BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
     created      TIMESTAMP,
     CONSTRAINT pk_itemrequest PRIMARY KEY (id)
 );
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS items
     description VARCHAR(255),
     available   BOOLEAN               NOT NULL,
     owner_id    BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
-    request_id  BIGINT,
+    request_id  BIGINT REFERENCES item_request (id) ON DELETE CASCADE,
     CONSTRAINT pk_items PRIMARY KEY (id)
 );
 
