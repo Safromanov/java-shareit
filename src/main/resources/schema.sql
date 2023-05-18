@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS items
     name        VARCHAR(255),
     description VARCHAR(255),
     available   BOOLEAN               NOT NULL,
-    user_id     BIGINT,
+    owner_id    BIGINT,
     request_id  BIGINT,
     CONSTRAINT pk_items PRIMARY KEY (id)
 );
@@ -41,7 +41,7 @@ ALTER TABLE items
     ADD CONSTRAINT IF NOT EXISTS fk_items_on_request FOREIGN KEY (request_id) REFERENCES item_request (id);
 
 ALTER TABLE items
-    ADD CONSTRAINT IF NOT EXISTS fk_items_on_user FOREIGN KEY (user_id) REFERENCES users (user_id);
+    ADD CONSTRAINT IF NOT EXISTS fk_items_on_user FOREIGN KEY (owner_id) REFERENCES users (user_id);
 
 
 ALTER TABLE item_request
