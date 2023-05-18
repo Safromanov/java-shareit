@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.user.User;
 
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
@@ -11,13 +12,12 @@ public class ItemMapper {
         );
     }
 
-    public static Item toItem(ItemDto item) {
+    public static Item toItem(ItemDto item, User owner) {
         return new Item(
-                -1,
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                null, null
+                owner
         );
     }
 }

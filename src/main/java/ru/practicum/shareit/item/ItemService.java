@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,8 +24,7 @@ public class ItemService {
 
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
-        Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(owner);
+        Item item = ItemMapper.toItem(itemDto, owner);
         item = itemRepository.save(item);
         itemDto.setId(item.getId());
         log.info("Created item - {}", itemDto);

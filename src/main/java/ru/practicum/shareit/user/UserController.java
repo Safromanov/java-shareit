@@ -13,15 +13,13 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Validated
 public class UserController {
 
     private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Validated({Create.class, Default.class})
-    public UserDto createUser(@RequestBody @Valid UserDto user) {
+    public UserDto createUser(@RequestBody @Validated({Create.class, Default.class}) UserDto user) {
         return userService.createUser(user);
     }
 

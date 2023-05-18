@@ -1,9 +1,7 @@
 package ru.practicum.shareit.user;
 
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
@@ -50,12 +48,11 @@ public class UserService {
     }
 
     public void deleteUserById(long id) {
-        try {
-            userRepository.deleteById(id);
-            log.info("Deleted user by id - {}", id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("User ID for delete dont found");
-        }
+        userRepository.findById(id).ifPresentOrElse(userRepository::delete,
+                () -> {
+                    throw new NotFoundException("User ID for delete dont found");
+                });
+        log.info("Deleted user by id - {}", id);
     }
 
     public List<UserDto> getAllUsers() {

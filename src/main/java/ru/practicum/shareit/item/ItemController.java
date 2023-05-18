@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.marker.Create;
 
 import javax.validation.Valid;
+import javax.validation.groups.Default;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
-@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -21,8 +21,7 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Validated(Create.class)
-    public ItemDto createItem(@RequestBody @Valid ItemDto item, @RequestHeader(USER_ID_HEADER) long userId) {
+    public ItemDto createItem(@RequestBody @Validated({Create.class, Default.class}) ItemDto item, @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.createItem(item, userId);
     }
 

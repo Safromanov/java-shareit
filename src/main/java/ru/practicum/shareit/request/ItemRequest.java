@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_request_id")
     private Long id;
 
     private String description;
