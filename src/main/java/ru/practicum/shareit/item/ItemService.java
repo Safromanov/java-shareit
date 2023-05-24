@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
@@ -21,7 +20,6 @@ public class ItemService {
     private final UserRepository userRepository;
 
     public ItemDto createItem(ItemDto itemDto, long userId) {
-
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
         Item item = ItemMapper.toItem(itemDto, owner);
@@ -46,12 +44,11 @@ public class ItemService {
     }
 
     public void deleteItemById(long id) {
-        try {
-            itemRepository.deleteById(id);
-            log.info("Deleted item with id - {}", id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Item ID dont found");
-        }
+        itemRepository.findById(id).ifPresentOrElse(itemRepository::delete,
+                () -> {
+                    throw new NotFoundException("Item ID dont found");
+                });
+        log.info("Deleted item with id - {}", id);
     }
 
     public List<ItemDto> getAllItemsByUserId(long id) {

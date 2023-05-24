@@ -21,7 +21,8 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto createItem(@RequestBody @Validated({Create.class, Default.class}) ItemDto item, @RequestHeader(USER_ID_HEADER) long userId) {
+    public ItemDto createItem(@RequestBody @Validated({Create.class, Default.class}) ItemDto item,
+                              @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.createItem(item, userId);
     }
 

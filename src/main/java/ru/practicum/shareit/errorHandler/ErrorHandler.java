@@ -40,9 +40,11 @@ public class ErrorHandler {
             MethodArgumentNotValidException e
     ) {
         final List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> new Violation(error.getField(), error.getDefaultMessage()))
+                .map(error -> {
+                    log.warn("{}: {} ({})", error.getField(), error.getDefaultMessage(), e.getClass().getSimpleName());
+                    return new Violation(error.getField(), error.getDefaultMessage());
+                })
                 .collect(Collectors.toList());
-        violations.forEach(v -> log.warn("{}: {} ({})", v.getFieldName(), v.getMessage(), e.getClass().getSimpleName()));
         return new ValidationErrorResponse(violations);
     }
 
@@ -53,13 +55,13 @@ public class ErrorHandler {
     ) {
         final List<Violation> violations = e.getConstraintViolations().stream()
                 .map(
-                        violation -> new Violation(
-                                violation.getPropertyPath().toString(),
-                                violation.getMessage()
-                        )
+                        violation -> {
+                            log.warn("{}: {} ({})", violation.getPropertyPath(), violation.getMessage(), e.getClass().getSimpleName());
+                            return new Violation(violation.getPropertyPath().toString(),
+                                    violation.getMessage());
+                        }
                 )
                 .collect(Collectors.toList());
-        violations.forEach(v -> log.warn("{}: {} ({})", v.getFieldName(), v.getMessage(), e.getClass().getSimpleName()));
         return new ValidationErrorResponse(violations);
     }
 }

@@ -18,12 +18,13 @@ public class Booking {
     @Column(name = "booking_id")
     private Long id;
 
-    private LocalDateTime  start;
+    private LocalDateTime start;
     @Column(name = "end_booking")
     private LocalDateTime end;
     @ManyToOne
     private Item item;
     @ManyToOne
     private User booker;
-    private String status;
+    @Enumerated
+    private Status status;
 }
