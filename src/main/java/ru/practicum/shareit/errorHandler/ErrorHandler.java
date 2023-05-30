@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.errorHandler.errorResponse.ErrorResponse;
 import ru.practicum.shareit.errorHandler.errorResponse.ValidationErrorResponse;
 import ru.practicum.shareit.errorHandler.errorResponse.Violation;
-import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
-import ru.practicum.shareit.errorHandler.exception.NotFoundException;
+import ru.practicum.shareit.errorHandler.exception.*;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -19,6 +18,27 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
+
+    @ExceptionHandler(AlreadyBookingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleAlreadyBookingException(AlreadyBookingException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(IncorrectUserException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleIncorrectUserException(IncorrectUserException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(TimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleTimeException(TimeException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler(AlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
