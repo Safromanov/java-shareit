@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Value
 @AllArgsConstructor
-public class BookingRequest {
+public class BookingPostRequest {
     @NotNull
     @FutureOrPresent
     LocalDateTime start;

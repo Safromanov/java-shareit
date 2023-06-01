@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.marker.Create;
 
 import javax.validation.Valid;
@@ -27,8 +28,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getById(@PathVariable long itemId) {
-        return itemService.getById(itemId);
+    public ItemDto getById(@PathVariable long itemId,
+                           @RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemService.getById(itemId, userId);
     }
 
     @GetMapping("/search")
@@ -45,7 +47,7 @@ public class ItemController {
     public ItemDto updateItem(@RequestBody @Valid ItemDto itemDto,
                               @PathVariable long itemId,
                               @RequestHeader(USER_ID_HEADER) long userId) {
-        return itemService.updateUser(itemDto, itemId, userId);
+        return itemService.updateItem(itemDto, itemId, userId);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.dto.BookingPostRequest;
+import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.user.User;
@@ -19,7 +21,7 @@ public class BookingMapper {
                 booking.getStatus());
     }
 
-    public static Booking toBooking(BookingRequest dto, User booker, Item item) {
+    public static Booking toBooking(BookingPostRequest dto, User booker, Item item) {
         return new Booking(
                 item,
                 booker,
