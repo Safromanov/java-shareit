@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingGetResponse;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
@@ -12,6 +13,7 @@ import ru.practicum.shareit.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,9 +23,8 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-    //    @PersistenceContext
-//    private final EntityManager entityManager;
     private final BookingRepository bookingRepository;
+
     public ItemDto createItem(ItemDto itemDto, long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
@@ -56,37 +57,33 @@ public class ItemService {
         log.info("Deleted item with id - {}", id);
     }
 
-    public List<ItemDto> getAllItemsByUserId(long id) {
-        return itemRepository.getAllByOwnerId(id).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    public List<ItemDto> getAllItemsByUserId(long idOwner) {
+        List<Item> items = itemRepository.getAllByOwnerId(idOwner);
+        List<BookingGetResponse> lastBookingsOfOwner = bookingRepository.
+                findByOwner_IdAndEndBeforeAndStatus(idOwner, LocalDateTime.now());
+        List<BookingGetResponse> nextBookingsOfOwner = bookingRepository
+                .findByOwner_IdAndStatusAndStartAfterOrderByStartAsc(idOwner, LocalDateTime.now());
+        List<ItemDto> ownerItems = new ArrayList<>();
+        for (Item item : items) {
+            ownerItems.add(
+                    ItemMapper.toItemGetDto(item,
+                            lastBookingsOfOwner.stream()
+                                    .filter(x -> x.getItemId() == item.getId()).findFirst().orElse(null),
+                            nextBookingsOfOwner.stream()
+                                    .filter(x -> x.getItemId() == item.getId()).findFirst().orElse(null)));
+        }
+        return ownerItems;
     }
 
     public ItemDto getById(long itemId, long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
         if (item.getOwner().getId() == userId) {
-//            QBooking qBooking = QBooking.booking;
-//            BooleanExpression exp = qBooking.item.owner.id.eq(userId)
-//                    .and(qBooking.start.before(LocalDateTime.now())
-//                            .and(qBooking.status.eq(Status.APPROVED)));
-//            JPAQuery<Booking> query = new JPAQuery<>(entityManager);
-//            var last = query.from(qBooking).where(qBooking.item.owner.id.eq(userId)
-//                            .and(qBooking.start.before(LocalDateTime.now())
-//                                    .and(qBooking.status.eq(Status.APPROVED))))
-//                    .orderBy(qBooking.start.desc()).stream()
-//                    .findFirst()
-//                    .orElse(null);
-//            var next = query.from(qBooking).where(qBooking.item.owner.id.eq(userId)
-//                            .and(qBooking.end.after(LocalDateTime.now())
-//                                    .and(qBooking.status.eq(Status.APPROVED))))
-//                    .orderBy(qBooking.start.asc())
-//                    .stream()
-//                    .findFirst()
-//                    .orElse(null);
-            var last = bookingRepository
-                    .findFirstByItem_IdAndEndBeforeAndItem_AvailableTrueOrderByEndDesc(itemId, LocalDateTime.now());
-            var next = bookingRepository
-                    .findFirstByItem_IdAndEndBeforeAndItem_AvailableTrueOrderByStartAsc(itemId, LocalDateTime.now());
-            return ItemMapper.toItemGetDto(item, last, next);
+            Optional<BookingGetResponse> last = bookingRepository
+                    .findByItem_IdAndEndBeforeAndStatus(itemId, LocalDateTime.now()).stream().findFirst();
+            Optional<BookingGetResponse> next = bookingRepository
+                    .findByItem_IdAndStatusAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now()).stream().findFirst();
+            return ItemMapper.toItemGetDto(item, last.orElse(null), next.orElse(null));
         }
 
         return ItemMapper.toItemDto(item);

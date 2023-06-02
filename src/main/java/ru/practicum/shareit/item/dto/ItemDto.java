@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor(force = true)
 @Builder
 @AllArgsConstructor
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemDto {
     long id;
     @NotBlank(groups = Create.class)

@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,8 +15,6 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -32,9 +29,6 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    @PersistenceContext
-    private final EntityManager entityManager;
-
     public BookingResponse booking(BookingPostRequest bookingReq, long bookerId) {
         if (!bookingReq.getEnd().isAfter(bookingReq.getStart()))
             throw new TimeException("Incorrect time of end booking");
@@ -48,7 +42,6 @@ public class BookingService {
     public BookingResponse getBooking(long bookingId, long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking dont found"));
-        //  if (booking.getItem().getOwner().getId() == userId) {
 
         if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId)
             return BookingMapper.toBookingResponse(booking);
@@ -72,55 +65,45 @@ public class BookingService {
     public List<BookingResponse> getAllBookingForUser(long userId, State state) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
-        BooleanExpression byBookerId = qBooking.booker.id.eq(userId);
-
-        JPAQuery<Booking> query = new JPAQuery<>(entityManager);
-
-        if (state == State.PAST)
-            byBookerId = byBookerId.and(qBooking.end.before(LocalDateTime.now()));
-        if (state == State.FUTURE)
-            byBookerId = byBookerId.and(qBooking.start.after(LocalDateTime.now()));
-        if (state == State.CURRENT)
-            byBookerId = byBookerId
-                    .and(qBooking.start.before(LocalDateTime.now())
-                            .and(qBooking.end.after(LocalDateTime.now())));
-        if (state == State.WAITING)
-            byBookerId = byBookerId
-                    .and(qBooking.status.eq(Status.WAITING));
-        if (state == State.REJECTED)
-            byBookerId = byBookerId
-                    .and(qBooking.status.eq(Status.REJECTED));
-
-        return ((Collection<Booking>) bookingRepository
-                .findAll(byBookerId))
-                .stream()
-                .sorted((x, y) -> -x.getStart().compareTo(y.getStart()))
-                .map(BookingMapper::toBookingResponse)
-                .collect(Collectors.toList());
+        BooleanExpression exp = qBooking.booker.id.eq(userId);
+        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now());
     }
 
     public List<BookingResponse> getAllBookingByOwner(long userId, State state) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
-        BooleanExpression byBookerId = qBooking.item.owner.id.eq(userId);
+        BooleanExpression exp = qBooking.item.owner.id.eq(userId);
+        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now());
+    }
 
-        if (state == State.PAST)
-            byBookerId = byBookerId.and(qBooking.end.before(LocalDateTime.now()));
-        if (state == State.FUTURE)
-            byBookerId = byBookerId.and(qBooking.start.after(LocalDateTime.now()));
-        if (state == State.CURRENT)
-            byBookerId = byBookerId
-                    .and(qBooking.start.before(LocalDateTime.now())
-                            .and(qBooking.end.after(LocalDateTime.now())));
-        if (state == State.WAITING)
-            byBookerId = byBookerId
-                    .and(qBooking.status.eq(Status.WAITING));
-        if (state == State.REJECTED)
-            byBookerId = byBookerId
-                    .and(qBooking.status.eq(Status.REJECTED));
-
+    private List<BookingResponse> getAllBookingBy(BooleanExpression exp,
+                                                  State state,
+                                                  QBooking qBooking,
+                                                  LocalDateTime currentTime) {
+        switch (state) {
+            case PAST:
+                exp = exp.and(qBooking.end.before(currentTime));
+                break;
+            case FUTURE:
+                exp = exp.and(qBooking.start.after(currentTime));
+                break;
+            case CURRENT:
+                exp = exp.and(qBooking.start.before(currentTime)
+                        .and(qBooking.end.after(currentTime)));
+                break;
+            case WAITING:
+                exp = exp.and(qBooking.status.eq(Status.WAITING));
+                break;
+            case REJECTED:
+                exp = exp.and(qBooking.status.eq(Status.REJECTED));
+                break;
+            case ALL:
+                break;
+            default:
+                throw new NotFoundException("Unknown state");
+        }
         return ((Collection<Booking>) bookingRepository
-                .findAll(byBookerId))
+                .findAll(exp))
                 .stream().sorted((x, y) -> -x.getStart().compareTo(y.getStart())).map(BookingMapper::toBookingResponse)
                 .collect(Collectors.toList());
     }
