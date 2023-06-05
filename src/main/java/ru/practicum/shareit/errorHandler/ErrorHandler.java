@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.errorHandler.errorResponse.ErrorResponse;
 import ru.practicum.shareit.errorHandler.errorResponse.ValidationErrorResponse;
 import ru.practicum.shareit.errorHandler.errorResponse.Violation;
@@ -33,9 +34,17 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(TimeException.class)
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleTimeException(TimeException e) {
+    public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.warn("Unknown state: UNSUPPORTED_STATUS");
+        return new ErrorResponse("Unknown state: " + e.getValue());
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(BadRequestException e) {
         log.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.marker.Create;
 
@@ -55,5 +56,11 @@ public class ItemController {
     public void deleteUserById(@PathVariable long itemId,
                                @RequestHeader(USER_ID_HEADER) long userId) {
         itemService.deleteItemById(itemId);
+    }
+
+    @PostMapping("{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") Long itemId,
+                                 @Valid @RequestBody CommentDto commentDto) {
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }

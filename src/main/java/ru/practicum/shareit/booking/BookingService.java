@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingPostRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.errorHandler.exception.AlreadyBookingException;
+import ru.practicum.shareit.errorHandler.exception.BadRequestException;
 import ru.practicum.shareit.errorHandler.exception.IncorrectUserException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
-import ru.practicum.shareit.errorHandler.exception.TimeException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
@@ -31,7 +31,7 @@ public class BookingService {
 
     public BookingResponse booking(BookingPostRequest bookingReq, long bookerId) {
         if (!bookingReq.getEnd().isAfter(bookingReq.getStart()))
-            throw new TimeException("Incorrect time of end booking");
+            throw new BadRequestException("Incorrect time of end booking");
 
         Booking booking = BookingMapper.toBooking(bookingReq, getBooker(bookerId), getItem(bookingReq.getItemId(), bookerId));
         booking = bookingRepository.save(booking);
@@ -48,11 +48,13 @@ public class BookingService {
         throw new IncorrectUserException("Only owner or Booker");
     }
 
-    public BookingResponse updateBooking(long bookingId, long bookerId, boolean approved) {
+    public BookingResponse approveBooking(long bookingId, long ownerId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking dont found"));
-        if (bookerId != booking.getItem().getOwner().getId())
-            throw new IncorrectUserException("Only owner can approved");
+        if (ownerId == booking.getBooker().getId())
+            throw new NotFoundException("Only owner can approved");
+        if (ownerId != booking.getItem().getOwner().getId())
+            throw new BadRequestException("Only owner can approved");
         if (!booking.getStatus().equals(Status.WAITING)) {
             throw new AlreadyBookingException("Its already approved or rejected");
         }
@@ -99,8 +101,6 @@ public class BookingService {
                 break;
             case ALL:
                 break;
-            default:
-                throw new NotFoundException("Unknown state");
         }
         return ((Collection<Booking>) bookingRepository
                 .findAll(exp))

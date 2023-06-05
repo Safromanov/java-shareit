@@ -9,6 +9,7 @@ import ru.practicum.shareit.user.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Entity
@@ -35,7 +36,10 @@ public class Item {
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 
-    public Item(String name, String description, boolean available, User owner) {
+    @OneToMany
+    private List<Comment> comments;
+
+    public Item(String name, String description, boolean available, User owner, List<Comment> comments) {
         this.name = name;
         this.description = description;
         this.available = available;

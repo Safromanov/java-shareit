@@ -1,11 +1,17 @@
 package ru.practicum.shareit.item;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.QBooking;
+import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
+import ru.practicum.shareit.errorHandler.exception.BadRequestException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -24,6 +30,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     public ItemDto createItem(ItemDto itemDto, long userId) {
         User owner = userRepository.findById(userId)
@@ -93,5 +100,30 @@ public class ItemService {
         if (str.isBlank()) return new ArrayList<>();
         return itemRepository.findByNameOrDescription(str)
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    }
+
+
+//    List<Booking> bookings = bookingRepository.findAllByBookerAndItemIdAndStatusAndEndOfBookingIsBefore(
+//            userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
+
+    public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
+        QBooking qBooking = QBooking.booking;
+
+        BooleanExpression exp = qBooking.booker.id.eq(userId)
+                .and(qBooking.item.id.eq(itemId))
+                .and(qBooking.status.eq(Status.APPROVED))
+                .and(qBooking.end.after(LocalDateTime.now()));
+
+        List<Booking> bookings = (List<Booking>) bookingRepository.findAll(exp);
+        if (bookings.isEmpty()) {
+            throw new BadRequestException("Вы не можете оставить комментарий.");
+        }
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
+        Item item = itemRepository.findById(itemId).orElseThrow(
+                () -> new NotFoundException("Предмет с id: " + itemId + " не существует"));
+        Comment comment = CommentMapper.commentFromDto(commentDto, user, item);
+        comment.setCreated(LocalDateTime.now());
+        return CommentMapper.commentToDto(commentRepository.save(comment));
     }
 }

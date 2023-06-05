@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long>, QuerydslPredicateExecutor<Booking> {
+
     @Query("select b from Booking b where b.item.id = ?1 and  b.end < ?2 " +
             "and  b.status = ru.practicum.shareit.booking.Status.APPROVED " +
             "order by  b.start desc")
@@ -30,10 +31,4 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Queryds
             "and b.start > ?2 " +
             "order by b.start")
     List<BookingGetResponse> findByOwner_IdAndStatusAndStartAfterOrderByStartAsc(long id, LocalDateTime start);
-
-    BookingGetResponse findFirstByItem_IdAndEndBeforeAndItem_AvailableTrueOrderByStartAsc(long id, LocalDateTime date);
-
-    BookingGetResponse findFirstByItem_IdAndEndBeforeAndItem_AvailableTrueOrderByEndDesc(long id, LocalDateTime date);
-
-
 }

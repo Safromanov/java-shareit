@@ -35,7 +35,7 @@ public class BookingController {
     public BookingResponse a(@PathVariable long bookingId,
                              @RequestParam(value = "approved", required = false) boolean approved,
                              @RequestHeader(USER_ID_HEADER) long ownerId) {
-        return bookingService.updateBooking(bookingId, ownerId, approved);
+        return bookingService.approveBooking(bookingId, ownerId, approved);
     }
 
     @GetMapping("/owner")

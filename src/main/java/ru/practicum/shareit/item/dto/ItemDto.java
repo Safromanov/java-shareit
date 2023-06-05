@@ -9,6 +9,7 @@ import ru.practicum.shareit.marker.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @NoArgsConstructor(force = true)
@@ -25,4 +26,5 @@ public class ItemDto {
     Boolean available;
     BookingGetResponse lastBooking;
     BookingGetResponse nextBooking;
+    List<CommentDto> comments;
 }
