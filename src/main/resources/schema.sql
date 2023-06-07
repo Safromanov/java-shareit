@@ -47,3 +47,8 @@ CREATE TABLE IF NOT EXISTS comments (
    CONSTRAINT pk_comments PRIMARY KEY (comment_id)
 );
 
+CREATE TABLE IF NOT EXISTS  items_comments (
+  item_id BIGINT NOT NULL REFERENCES items (item_id),
+  comment_id BIGINT NOT NULL REFERENCES comments (comment_id)
+);
+
