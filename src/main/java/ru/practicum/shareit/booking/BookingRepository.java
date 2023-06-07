@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long>, QuerydslPredicateExecutor<Booking> {
 
-    @Query("select b from Booking b where b.item.id = ?1 and  b.end < ?2 " +
+    @Query("select b from Booking b where b.item.id = ?1 and  b.start < ?2 " +
             "and  b.status = ru.practicum.shareit.booking.Status.APPROVED " +
             "order by  b.start desc")
     List<BookingGetResponse> findByItem_IdAndEndBeforeAndStatus(long id, LocalDateTime end);

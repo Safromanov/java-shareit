@@ -1,10 +1,11 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
+import ru.practicum.shareit.comment.CommentDto;
 import ru.practicum.shareit.marker.Create;
 
 import javax.validation.constraints.NotBlank;

@@ -9,10 +9,9 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.QBooking;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
+import ru.practicum.shareit.comment.*;
 import ru.practicum.shareit.errorHandler.exception.BadRequestException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -85,6 +84,9 @@ public class ItemService {
     public ItemDto getById(long itemId, long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
+        BooleanExpression exp = QComment.comment.item.id.eq(itemId);
+        List<Comment> comments = (List<Comment>) commentRepository.findAll(exp);
+        item.setComments(comments);
         if (item.getOwner().getId() == userId) {
             Optional<BookingGetResponse> last = bookingRepository
                     .findByItem_IdAndEndBeforeAndStatus(itemId, LocalDateTime.now()).stream().findFirst();
@@ -92,7 +94,6 @@ public class ItemService {
                     .findByItem_IdAndStatusAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now()).stream().findFirst();
             return ItemMapper.toItemGetDto(item, last.orElse(null), next.orElse(null));
         }
-
         return ItemMapper.toItemDto(item);
     }
 
@@ -102,28 +103,26 @@ public class ItemService {
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
-
-//    List<Booking> bookings = bookingRepository.findAllByBookerAndItemIdAndStatusAndEndOfBookingIsBefore(
-//            userId, itemId, BookingStatus.APPROVED, LocalDateTime.now());
-
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         QBooking qBooking = QBooking.booking;
 
         BooleanExpression exp = qBooking.booker.id.eq(userId)
                 .and(qBooking.item.id.eq(itemId))
                 .and(qBooking.status.eq(Status.APPROVED))
-                .and(qBooking.end.after(LocalDateTime.now()));
+                .and(qBooking.end.before(LocalDateTime.now()));
 
         List<Booking> bookings = (List<Booking>) bookingRepository.findAll(exp);
+
         if (bookings.isEmpty()) {
-            throw new BadRequestException("Вы не можете оставить комментарий.");
+            throw new BadRequestException("Only those who have previously booked can send a message");
         }
+
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
+                () -> new NotFoundException("User ID dont found"));
         Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new NotFoundException("Предмет с id: " + itemId + " не существует"));
+                () -> new NotFoundException("Item ID dont found"));
+
         Comment comment = CommentMapper.commentFromDto(commentDto, user, item);
-        comment.setCreated(LocalDateTime.now());
         return CommentMapper.commentToDto(commentRepository.save(comment));
     }
 }

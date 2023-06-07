@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.comment.CommentMapper;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
@@ -14,6 +14,9 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.isAvailable())
+                .comments(item.getComments().stream()
+                        .map(CommentMapper::commentToDto)
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -30,7 +33,6 @@ public class ItemMapper {
         if (next != null) responseBuilder.nextBooking(next);
         return responseBuilder.build();
     }
-
 
     public static Item toItem(ItemDto item, User owner) {
         return new Item(
