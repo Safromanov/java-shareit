@@ -65,8 +65,8 @@ public class ItemService {
 
     public List<ItemDto> getAllItemsByUserId(long idOwner) {
         List<Item> items = itemRepository.getAllByOwnerId(idOwner);
-        List<BookingGetResponse> lastBookingsOfOwner = bookingRepository.
-                findByOwner_IdAndEndBeforeAndStatus(idOwner, LocalDateTime.now());
+        List<BookingGetResponse> lastBookingsOfOwner = bookingRepository
+                .findByOwner_IdAndEndBeforeAndStatus(idOwner, LocalDateTime.now());
         List<BookingGetResponse> nextBookingsOfOwner = bookingRepository
                 .findByOwner_IdAndStatusAndStartAfterOrderByStartAsc(idOwner, LocalDateTime.now());
         List<ItemDto> ownerItems = new ArrayList<>();
