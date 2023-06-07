@@ -33,7 +33,8 @@ public class BookingService {
         if (!bookingReq.getEnd().isAfter(bookingReq.getStart()))
             throw new BadRequestException("Incorrect time of end booking");
 
-        Booking booking = BookingMapper.toBooking(bookingReq, getBooker(bookerId), getItem(bookingReq.getItemId(), bookerId));
+        Booking booking = BookingMapper
+                .toBooking(bookingReq, getBooker(bookerId), getItem(bookingReq.getItemId(), bookerId));
         booking = bookingRepository.save(booking);
         log.info("Booking - {}", booking);
         return BookingMapper.toBookingResponse(booking);
