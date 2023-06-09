@@ -18,12 +18,17 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserDto createUser(UserDto userDto) {
-        if (!((List<User>) userRepository.findAll(QUser.user.email.eq(userDto.getEmail()))).isEmpty())
-            throw new AlreadyExistException("Email has already been taken");
+//        if (!((List<User>) userRepository.findAll(QUser.user.email.eq(userDto.getEmail()))).isEmpty())
+//            throw new AlreadyExistException("Email has already been taken");
+//        try {
+
         User user = userRepository.save(UserMapper.toUser(userDto));
         userDto.setId(user.getId());
         log.info("Created user - {}", userDto);
         return userDto;
+//        } catch (RuntimeException e) {
+//            throw new AlreadyExistException("Email has already been taken");
+//        }
     }
 
     public UserDto updateUser(UserDto userDto, long userId) {
