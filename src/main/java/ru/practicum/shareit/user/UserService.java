@@ -18,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserDto createUser(UserDto userDto) {
-        if (((List<User>) userRepository.findAll(QUser.user.email.eq(userDto.getEmail()))).isEmpty())
+        if (!((List<User>) userRepository.findAll(QUser.user.email.eq(userDto.getEmail()))).isEmpty())
             throw new AlreadyExistException("Email has already been taken");
         User user = userRepository.save(UserMapper.toUser(userDto));
         userDto.setId(user.getId());
