@@ -1,10 +1,15 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserDto;
+import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.UserRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,10 +18,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @Override
+    @Transactional
     public UserDto createUser(UserDto userDto) {
         User user = userRepository.save(UserMapper.toUser(userDto));
         userDto.setId(user.getId());
@@ -24,11 +31,13 @@ public class UserService {
         return userDto;
     }
 
+    @Override
+    @Transactional
     public UserDto updateUser(UserDto userDto, long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User ID dont found"));
         if (userDto.getEmail() != null) {
-            if (countByEmail(userDto.getEmail()) > 0
+            if (userRepository.findByEmail(userDto.getEmail()).isPresent()
                     && !Objects.equals(user.getEmail(), userDto.getEmail()))
                 throw new AlreadyExistException("Email has already been taken");
             user.setEmail(userDto.getEmail());
@@ -40,12 +49,16 @@ public class UserService {
         return UserMapper.toUserDto(user);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public UserDto getById(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
         return UserMapper.toUserDto(user);
     }
 
+    @Override
+    @Transactional
     public void deleteUserById(long id) {
         userRepository.findById(id).ifPresentOrElse(userRepository::delete,
                 () -> {
@@ -54,11 +67,9 @@ public class UserService {
         log.info("Deleted user by id - {}", id);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
-    }
-
-    private long countByEmail(String email) {
-        return userRepository.countByEmail(email);
     }
 }

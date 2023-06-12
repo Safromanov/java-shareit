@@ -1,17 +1,22 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.Booking;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.QBooking;
-import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.comment.*;
 import ru.practicum.shareit.errorHandler.exception.BadRequestException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.item.ItemMapper;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -24,13 +29,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ItemService {
+public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
+    @Override
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
@@ -41,6 +48,8 @@ public class ItemService {
         return itemDto;
     }
 
+    @Override
+    @Transactional
     public ItemDto updateItem(ItemDto itemDto, long itemId, long userId) {
         Item item = itemRepository.findByIdAndOwnerId(itemId, userId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
@@ -55,6 +64,8 @@ public class ItemService {
         return ItemMapper.toItemDto(item);
     }
 
+    @Override
+    @Transactional
     public void deleteItemById(long id) {
         itemRepository.findById(id).ifPresentOrElse(itemRepository::delete,
                 () -> {
@@ -63,12 +74,14 @@ public class ItemService {
         log.info("Deleted item with id - {}", id);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> getAllItemsByUserId(long idOwner) {
-        List<Item> items = itemRepository.getAllByOwnerId(idOwner);
+        List<Item> items = itemRepository.findByOwnerId(idOwner);
         List<BookingGetResponse> lastBookingsOfOwner = bookingRepository
-                .findByOwner_IdAndEndBeforeAndStatus(idOwner, LocalDateTime.now());
+                .findApprovedByOwnerIdAndEndBefore(idOwner, LocalDateTime.now());
         List<BookingGetResponse> nextBookingsOfOwner = bookingRepository
-                .findByOwner_IdAndStatusAndStartAfterOrderByStartAsc(idOwner, LocalDateTime.now());
+                .findApprovedByOwnerIdAndStartAfter(idOwner, LocalDateTime.now());
         List<ItemDto> ownerItems = new ArrayList<>();
         for (Item item : items) {
             ownerItems.add(
@@ -81,6 +94,8 @@ public class ItemService {
         return ownerItems;
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public ItemDto getById(long itemId, long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
@@ -89,20 +104,24 @@ public class ItemService {
         item.setComments(comments);
         if (item.getOwner().getId() == userId) {
             Optional<BookingGetResponse> last = bookingRepository
-                    .findByItem_IdAndEndBeforeAndStatus(itemId, LocalDateTime.now()).stream().findFirst();
+                    .findApprovedByItemIdAndBefore(itemId, LocalDateTime.now()).stream().findFirst();
             Optional<BookingGetResponse> next = bookingRepository
-                    .findByItem_IdAndStatusAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now()).stream().findFirst();
+                    .findApprovedByItemIdAndStartAfter(itemId, LocalDateTime.now()).stream().findFirst();
             return ItemMapper.toItemGetDto(item, last.orElse(null), next.orElse(null));
         }
         return ItemMapper.toItemDto(item);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> findByItemNameOrDesc(String str) {
         if (str.isBlank()) return new ArrayList<>();
         return itemRepository.findByNameOrDescription(str)
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         QBooking qBooking = QBooking.booking;
 

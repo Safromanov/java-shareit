@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
-import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 

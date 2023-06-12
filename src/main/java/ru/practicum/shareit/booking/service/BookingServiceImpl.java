@@ -1,11 +1,18 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingMapper;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.QBooking;
 import ru.practicum.shareit.booking.dto.BookingPostRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.State;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.errorHandler.exception.AlreadyBookingException;
 import ru.practicum.shareit.errorHandler.exception.BadRequestException;
 import ru.practicum.shareit.errorHandler.exception.IncorrectUserException;
@@ -23,12 +30,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class BookingService {
+public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    @Override
+    @Transactional
     public BookingResponse booking(BookingPostRequest bookingReq, long bookerId) {
         if (!bookingReq.getEnd().isAfter(bookingReq.getStart()))
             throw new BadRequestException("Incorrect time of end booking");
@@ -40,6 +49,8 @@ public class BookingService {
         return BookingMapper.toBookingResponse(booking);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public BookingResponse getBooking(long bookingId, long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking dont found"));
@@ -49,6 +60,8 @@ public class BookingService {
         throw new IncorrectUserException("Only owner or Booker");
     }
 
+    @Override
+    @Transactional
     public BookingResponse approveBooking(long bookingId, long ownerId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking dont found"));
@@ -65,6 +78,8 @@ public class BookingService {
         return BookingMapper.toBookingResponse(bookingRepository.save(booking));
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<BookingResponse> getAllBookingForUser(long userId, State state) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
@@ -72,6 +87,8 @@ public class BookingService {
         return getAllBookingBy(exp, state, qBooking, LocalDateTime.now());
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<BookingResponse> getAllBookingByOwner(long userId, State state) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
@@ -109,6 +126,7 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+
     private Item getItem(long id, long bookerId) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Item dont found"));
@@ -124,5 +142,4 @@ public class BookingService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
     }
-
 }

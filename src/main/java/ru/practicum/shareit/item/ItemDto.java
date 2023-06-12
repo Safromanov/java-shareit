@@ -16,16 +16,15 @@ import java.util.List;
 @NoArgsConstructor(force = true)
 @Builder
 @AllArgsConstructor
-//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ItemDto {
-    long id;
+    private long id;
     @NotBlank(groups = Create.class)
-    String name;
+    private String name;
     @NotBlank(groups = Create.class)
-    String description;
+    private String description;
     @NotNull(groups = Create.class)
-    Boolean available;
-    BookingGetResponse lastBooking;
-    BookingGetResponse nextBooking;
-    List<CommentDto> comments;
+    private Boolean available;
+    private BookingGetResponse lastBooking;
+    private BookingGetResponse nextBooking;
+    private List<CommentDto> comments;
 }
