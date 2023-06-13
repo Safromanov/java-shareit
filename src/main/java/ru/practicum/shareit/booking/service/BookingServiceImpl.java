@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -50,7 +51,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public BookingResponse getBooking(long bookingId, long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking dont found"));
@@ -79,7 +79,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookingResponse> getAllBookingForUser(long userId, State state) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
@@ -88,7 +87,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookingResponse> getAllBookingByOwner(long userId, State state) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;

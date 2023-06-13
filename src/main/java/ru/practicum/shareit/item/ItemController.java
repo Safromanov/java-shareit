@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.CommentDto;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.marker.Create;
 
 import javax.validation.Valid;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
 
-    private final ItemServiceImpl itemService;
+    private final ItemService itemService;
     public static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping

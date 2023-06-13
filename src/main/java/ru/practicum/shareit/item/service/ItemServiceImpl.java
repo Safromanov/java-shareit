@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.comment.*;
 import ru.practicum.shareit.errorHandler.exception.BadRequestException;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -75,7 +76,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ItemDto> getAllItemsByUserId(long idOwner) {
         List<Item> items = itemRepository.findByOwnerId(idOwner);
         List<BookingGetResponse> lastBookingsOfOwner = bookingRepository
@@ -95,7 +95,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public ItemDto getById(long itemId, long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
@@ -113,7 +112,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ItemDto> findByItemNameOrDesc(String str) {
         if (str.isBlank()) return new ArrayList<>();
         return itemRepository.findByNameOrDescription(str)

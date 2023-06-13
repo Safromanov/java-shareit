@@ -10,8 +10,6 @@ import ru.practicum.shareit.user.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-
-
 @Entity
 @Table(name = "comments")
 @Setter
