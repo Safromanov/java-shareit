@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.*;
 import ru.practicum.shareit.comment.Comment;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
@@ -33,6 +34,10 @@ public class Item {
 
     @OneToMany
     private List<Comment> comments;
+
+    @ManyToOne
+    @JoinColumn(name = "item_request_id")
+    private ItemRequest itemRequest;
 
     public Item(String name, String description, boolean available, User owner, List<Comment> comments) {
         this.name = name;
