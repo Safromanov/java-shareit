@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.shareit.comment.Comment;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
@@ -33,6 +36,7 @@ public class Item {
     private User owner;
 
     @OneToMany
+    @JoinColumn(name = "comment_id")
     private List<Comment> comments;
 
     @ManyToOne
