@@ -24,6 +24,7 @@ public class ItemRequest {
     @Column(name = "request_id")
     private Long id;
     private String description;
+
     @OneToOne
     @JoinColumn(name = "requestor_id")
     private User requestor;

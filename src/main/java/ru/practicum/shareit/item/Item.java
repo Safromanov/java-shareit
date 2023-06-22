@@ -43,11 +43,11 @@ public class Item {
     @JoinColumn(name = "item_request_id")
     private ItemRequest itemRequest;
 
-    public Item(String name, String description, boolean available, User owner, List<Comment> comments) {
+    public Item(String name, String description, boolean available, User owner, List<Comment> comments, ItemRequest itemRequest) {
         this.name = name;
         this.description = description;
         this.available = available;
         this.owner = owner;
+        this.itemRequest = itemRequest;
     }
-
 }

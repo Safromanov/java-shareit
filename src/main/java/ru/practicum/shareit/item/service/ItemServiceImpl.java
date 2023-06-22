@@ -3,12 +3,13 @@ package ru.practicum.shareit.item.service;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.QBooking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.comment.*;
 import ru.practicum.shareit.errorHandler.exception.BadRequestException;
@@ -17,6 +18,7 @@ import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -34,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final CommentRepository commentRepository;
 
     @Override
@@ -41,7 +44,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto createItem(ItemDto itemDto, long userId) {
         User owner = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
-        Item item = ItemMapper.toItem(itemDto, owner);
+
+        var itemRequest = (itemDto.getRequestId() != null)
+                ? itemRequestRepository.findById(itemDto.getRequestId()).orElse(null)
+                : null;
+        Item item = ItemMapper.toItem(itemDto, owner, itemRequest);
         item = itemRepository.save(item);
         itemDto.setId(item.getId());
         log.info("Created item - {}", itemDto);
@@ -76,8 +83,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> getAllItemsByUserId(long idOwner) {
-        List<Item> items = itemRepository.findByOwnerId(idOwner);
+    public List<ItemDto> getAllItemsByUserId(long idOwner, int from, int size) {
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        List<Item> items = itemRepository.findByOwnerId(idOwner, page).getContent();
         List<BookingGetResponse> lastBookingsOfOwner = bookingRepository
                 .findApprovedByOwnerIdAndEndBefore(idOwner, LocalDateTime.now());
         List<BookingGetResponse> nextBookingsOfOwner = bookingRepository

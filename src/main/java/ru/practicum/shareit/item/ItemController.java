@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.marker.Create;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.groups.Default;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
 
     private final ItemServiceImpl itemService;
@@ -30,7 +33,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable long itemId,
-                           @RequestHeader("X-Sharer-User-Id") long userId) {
+                           @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.getById(itemId, userId);
     }
 
@@ -40,8 +43,10 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId) {
-        return itemService.getAllItemsByUserId(userId);
+    public List<ItemDto> getAllItemsByUserId(@RequestHeader(USER_ID_HEADER) long userId,
+                                             @RequestParam(defaultValue = "0") @Min(0) int from,
+                                             @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+        return itemService.getAllItemsByUserId(userId, from, size);
     }
 
     @PatchMapping("/{itemId}")
@@ -59,7 +64,8 @@ public class ItemController {
     }
 
     @PostMapping("{itemId}/comment")
-    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable("itemId") Long itemId,
+    public CommentDto addComment(@RequestHeader(USER_ID_HEADER) Long userId,
+                                 @PathVariable("itemId") Long itemId,
                                  @Valid @RequestBody CommentDto commentDto) {
         return itemService.addComment(userId, itemId, commentDto);
     }

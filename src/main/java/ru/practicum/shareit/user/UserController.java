@@ -8,6 +8,8 @@ import ru.practicum.shareit.marker.Create;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.groups.Default;
 import java.util.List;
 
@@ -25,7 +27,8 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@Valid @RequestBody UserDto user, @PathVariable long userId) {
+    public UserDto updateUser(@Valid @RequestBody UserDto user,
+                              @PathVariable long userId) {
         return userService.updateUser(user, userId);
     }
 
@@ -41,7 +44,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserDto> getAllUsers(@RequestParam(defaultValue = "0") @Min(0) int from,
+                                     @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+        return userService.getAllUsers(from, size);
     }
 }

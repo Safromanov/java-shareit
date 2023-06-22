@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking.service;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -23,9 +25,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -80,26 +80,29 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponse> getAllBookingForUser(long userId, State state) {
+    public List<BookingResponse> getAllBookingForUser(long userId, State state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
         BooleanExpression exp = qBooking.booker.id.eq(userId);
-        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now());
+        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now(), from, size);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponse> getAllBookingByOwner(long userId, State state) {
+    public List<BookingResponse> getAllBookingByOwner(long userId, State state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
         BooleanExpression exp = qBooking.item.owner.id.eq(userId);
-        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now());
+        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now(), from, size);
     }
 
     private List<BookingResponse> getAllBookingBy(BooleanExpression exp,
                                                   State state,
                                                   QBooking qBooking,
-                                                  LocalDateTime currentTime) {
+                                                  LocalDateTime currentTime, int from, int size) {
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size,
+                Sort.by("start").descending());
+
         switch (state) {
             case PAST:
                 exp = exp.and(qBooking.end.before(currentTime));
@@ -120,10 +123,7 @@ public class BookingServiceImpl implements BookingService {
             case ALL:
                 break;
         }
-        return ((Collection<Booking>) bookingRepository
-                .findAll(exp))
-                .stream().sorted((x, y) -> -x.getStart().compareTo(y.getStart())).map(BookingMapper::toBookingResponse)
-                .collect(Collectors.toList());
+        return bookingRepository.findAll(exp, page).map(BookingMapper::toBookingResponse).getContent();
     }
 
 
