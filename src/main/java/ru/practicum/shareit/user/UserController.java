@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.marker.Create;
+import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
 import javax.validation.groups.Default;

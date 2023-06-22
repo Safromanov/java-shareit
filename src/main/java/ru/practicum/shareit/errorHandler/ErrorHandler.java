@@ -6,11 +6,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.errorHandler.errorResponse.ErrorResponse;
 import ru.practicum.shareit.errorHandler.errorResponse.ValidationErrorResponse;
 import ru.practicum.shareit.errorHandler.errorResponse.Violation;
-import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
-import ru.practicum.shareit.errorHandler.exception.NotFoundException;
+import ru.practicum.shareit.errorHandler.exception.*;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -19,6 +19,35 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
+
+    @ExceptionHandler(AlreadyBookingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleAlreadyBookingException(AlreadyBookingException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(IncorrectUserException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleIncorrectUserException(IncorrectUserException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.warn("Unknown state: UNSUPPORTED_STATUS");
+        return new ErrorResponse("Unknown state: " + e.getValue());
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(BadRequestException e) {
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler(AlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
@@ -40,9 +69,11 @@ public class ErrorHandler {
             MethodArgumentNotValidException e
     ) {
         final List<Violation> violations = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> new Violation(error.getField(), error.getDefaultMessage()))
+                .map(error -> {
+                    log.warn("{}: {} ({})", error.getField(), error.getDefaultMessage(), e.getClass().getSimpleName());
+                    return new Violation(error.getField(), error.getDefaultMessage());
+                })
                 .collect(Collectors.toList());
-        violations.forEach(v -> log.warn("{}: {} ({})", v.getFieldName(), v.getMessage(), e.getClass().getSimpleName()));
         return new ValidationErrorResponse(violations);
     }
 
@@ -53,13 +84,13 @@ public class ErrorHandler {
     ) {
         final List<Violation> violations = e.getConstraintViolations().stream()
                 .map(
-                        violation -> new Violation(
-                                violation.getPropertyPath().toString(),
-                                violation.getMessage()
-                        )
+                        violation -> {
+                            log.warn("{}: {} ({})", violation.getPropertyPath(), violation.getMessage(), e.getClass().getSimpleName());
+                            return new Violation(violation.getPropertyPath().toString(),
+                                    violation.getMessage());
+                        }
                 )
                 .collect(Collectors.toList());
-        violations.forEach(v -> log.warn("{}: {} ({})", v.getFieldName(), v.getMessage(), e.getClass().getSimpleName()));
         return new ValidationErrorResponse(violations);
     }
 }
