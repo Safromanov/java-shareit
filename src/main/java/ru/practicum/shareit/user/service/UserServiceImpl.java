@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -37,9 +36,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User ID dont found"));
         if (userDto.getEmail() != null) {
-            if (userRepository.findByEmail(userDto.getEmail()).isPresent()
-                    && !Objects.equals(user.getEmail(), userDto.getEmail()))
-                throw new AlreadyExistException("Email has already been taken");
+            userRepository.findByEmail(userDto.getEmail())
+                    .ifPresent(userWithSameEmail -> {
+                        if (userWithSameEmail.getId() != userId)
+                            throw new AlreadyExistException("Email has already been taken");
+                    });
             user.setEmail(userDto.getEmail());
         }
         if (userDto.getName() != null)

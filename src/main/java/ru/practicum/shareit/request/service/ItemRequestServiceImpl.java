@@ -8,7 +8,7 @@ import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestMapper;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ResponseItemReq;
+import ru.practicum.shareit.request.dto.ResponseItemRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -23,7 +23,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final UserRepository userRepo;
 
     @Override
-    public ResponseItemReq createItemRequest(long userId, ItemRequestDto requestDto) {
+    public ResponseItemRequest createItemRequest(long userId, ItemRequestDto requestDto) {
         User owner = userRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
         ItemRequest itemRequest = requestRepo.save(ItemRequestMapper.fromDto(requestDto, owner));
@@ -31,7 +31,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ResponseItemReq> getRequests(long userId, int from, int size) {
+    public List<ResponseItemRequest> getRequests(long userId, int from, int size) {
         userRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
@@ -41,7 +41,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ResponseItemReq> getOtherUsersRequests(long userId, int from, int size) {
+    public List<ResponseItemRequest> getOtherUsersRequests(long userId, int from, int size) {
         userRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
@@ -51,7 +51,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public ResponseItemReq getItemRequest(long requesterId, long requestId) {
+    public ResponseItemRequest getItemRequest(long requesterId, long requestId) {
         userRepo.findById(requesterId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
         ItemRequest request = requestRepo.findById(requestId)

@@ -84,13 +84,6 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.jeasy</groupId>-->
-<!--            <artifactId>easy-random-core</artifactId>-->
-<!--            <version>5.0.0</version>-->
-<!--&lt;!&ndash;            <scope>test</scope>&ndash;&gt;-->
-<!--        </dependency>-->
-
     </dependencies>
 
     <build>
@@ -299,5 +292,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

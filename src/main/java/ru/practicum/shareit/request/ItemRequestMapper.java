@@ -3,7 +3,7 @@ package ru.practicum.shareit.request;
 import ru.practicum.shareit.item.ItemDto;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ResponseItemReq;
+import ru.practicum.shareit.request.dto.ResponseItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
@@ -17,11 +17,11 @@ public class ItemRequestMapper {
         return new ItemRequest(dto.getDescription(), owner, LocalDateTime.now());
     }
 
-    public static ResponseItemReq toResponseItemReq(ItemRequest request) {
+    public static ResponseItemRequest toResponseItemReq(ItemRequest request) {
         List<ItemDto> itemsDto = request.getItems() == null
                 ? new ArrayList<>()
                 : request.getItems().stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
-        return new ResponseItemReq(request.getId(),
+        return new ResponseItemRequest(request.getId(),
                 request.getDescription(),
                 request.getCreated(),
                 itemsDto);

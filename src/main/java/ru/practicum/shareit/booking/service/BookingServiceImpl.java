@@ -89,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponse> getAllBookingByOwner(long userId, State state, int from, int size) {
+    public List<BookingResponse> getAllBookingsByOwner(long userId, State state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
         BooleanExpression exp = qBooking.item.owner.id.eq(userId);
