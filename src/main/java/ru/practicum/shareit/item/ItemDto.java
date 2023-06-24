@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class ItemDto {

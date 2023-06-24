@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingGetResponse;
 import ru.practicum.shareit.booking.dto.BookingPostRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.booking.model.Booking;
@@ -19,6 +20,12 @@ public class BookingMapper {
                 ItemMapper.toItemDto(booking.getItem()),
                 UserMapper.toUserDto(booking.getBooker()),
                 booking.getStatus());
+    }
+
+    public static BookingGetResponse toBookingGetResponse(Booking booking) {
+        return new BookingGetResponse(booking.getId(),
+                booking.getItem().getId(),
+                booking.getBooker().getId());
     }
 
     public static Booking toBooking(BookingPostRequest dto, User booker, Item item) {

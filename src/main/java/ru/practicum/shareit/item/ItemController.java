@@ -38,8 +38,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> findByItemName(@RequestParam(value = "text", required = false) String str) {
-        return itemService.findByItemNameOrDesc(str);
+    public List<ItemDto> findByItemNameOrDesc(@RequestParam(value = "text", required = false) String str,
+                                              @RequestParam(defaultValue = "0") @Min(0) int from,
+                                              @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+        return itemService.findByItemNameOrDesc(str, from, size);
     }
 
     @GetMapping
@@ -56,12 +58,12 @@ public class ItemController {
         return itemService.updateItem(itemDto, itemId, userId);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{itemId}")
-    public void deleteUserById(@PathVariable long itemId,
-                               @RequestHeader(USER_ID_HEADER) long userId) {
-        itemService.deleteItemById(itemId);
-    }
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @DeleteMapping("/{itemId}")
+//    public void deleteUserById(@PathVariable long itemId,
+//                               @RequestHeader(USER_ID_HEADER) long userId) {
+//        itemService.deleteItemById(itemId);
+//    }
 
     @PostMapping("{itemId}/comment")
     public CommentDto addComment(@RequestHeader(USER_ID_HEADER) Long userId,

@@ -4,8 +4,11 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.util.StreamUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
 import ru.practicum.shareit.booking.model.Booking;
@@ -72,24 +75,23 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional
-    public void deleteItemById(long id) {
-        itemRepository.findById(id).ifPresentOrElse(itemRepository::delete,
-                () -> {
-                    throw new NotFoundException("Item ID dont found");
-                });
-        log.info("Deleted item with id - {}", id);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<ItemDto> getAllItemsByUserId(long idOwner, int from, int size) {
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        List<Item> items = itemRepository.findByOwnerId(idOwner, page).getContent();
-        List<BookingGetResponse> lastBookingsOfOwner = bookingRepository
-                .findApprovedByOwnerIdAndEndBefore(idOwner, LocalDateTime.now());
-        List<BookingGetResponse> nextBookingsOfOwner = bookingRepository
-                .findApprovedByOwnerIdAndStartAfter(idOwner, LocalDateTime.now());
+        QBooking qBooking = QBooking.booking;
+
+        List<Item> items = itemRepository.findAllByOwnerId(idOwner, page).getContent();
+        List<BookingGetResponse> lastBookingsOfOwner = StreamUtils.createStreamFromIterator(
+                        bookingRepository.findAll(qBooking.item.owner.id.eq(idOwner)
+                                        .and(qBooking.start.before(LocalDateTime.now())),
+                                Sort.by("start").descending()).iterator())
+                .map(BookingMapper::toBookingGetResponse).collect(Collectors.toList());
+        List<BookingGetResponse> nextBookingsOfOwner = StreamUtils.createStreamFromIterator(
+                        bookingRepository.findAll(qBooking.item.owner.id.eq(idOwner)
+                                        .and(qBooking.start.after(LocalDateTime.now())),
+                                Sort.by("start").ascending()).iterator())
+                .map(BookingMapper::toBookingGetResponse).collect(Collectors.toList());
+
         List<ItemDto> ownerItems = new ArrayList<>();
         for (Item item : items) {
             ownerItems.add(
@@ -105,16 +107,25 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public ItemDto getById(long itemId, long userId) {
+        PageRequest sortDescFirst = PageRequest.of(0, 1, Sort.by("start").descending());
+        PageRequest sortAscFirst = PageRequest.of(0, 1, Sort.by("start").ascending());
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item ID dont found"));
         BooleanExpression exp = QComment.comment.item.id.eq(itemId);
         List<Comment> comments = (List<Comment>) commentRepository.findAll(exp);
         item.setComments(comments);
+        QBooking qBooking = QBooking.booking;
         if (item.getOwner().getId() == userId) {
-            Optional<BookingGetResponse> last = bookingRepository
-                    .findApprovedByItemIdAndBefore(itemId, LocalDateTime.now()).stream().findFirst();
-            Optional<BookingGetResponse> next = bookingRepository
-                    .findApprovedByItemIdAndStartAfter(itemId, LocalDateTime.now()).stream().findFirst();
+            var last = bookingRepository.findAll(qBooking.item.id.eq(itemId)
+                            .and(qBooking.start.before(LocalDateTime.now()))
+                            .and(qBooking.status.eq(Status.APPROVED)), sortDescFirst).stream()
+                    .map(BookingMapper::toBookingGetResponse)
+                    .findFirst();
+            Optional<BookingGetResponse> next = bookingRepository.findAll(qBooking.item.id.eq(itemId)
+                            .and(qBooking.start.after(LocalDateTime.now()))
+                            .and(qBooking.status.eq(Status.APPROVED)), sortAscFirst).stream()
+                    .map(BookingMapper::toBookingGetResponse)
+                    .findFirst();
             return ItemMapper.toItemGetDto(item, last.orElse(null), next.orElse(null));
         }
         return ItemMapper.toItemDto(item);
@@ -122,9 +133,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemDto> findByItemNameOrDesc(String str) {
+    public List<ItemDto> findByItemNameOrDesc(String str, int from, int size) {
         if (str.isBlank()) return new ArrayList<>();
-        return itemRepository.findByNameOrDescription(str)
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        return itemRepository.findByNameOrDescription(str, page)
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
@@ -144,12 +156,9 @@ public class ItemServiceImpl implements ItemService {
             throw new BadRequestException("Only those who have previously booked can send a message");
         }
 
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException("User ID dont found"));
-        Item item = itemRepository.findById(itemId).orElseThrow(
-                () -> new NotFoundException("Item ID dont found"));
-
-        Comment comment = CommentMapper.commentFromDto(commentDto, user, item);
+        Comment comment = CommentMapper.commentFromDto(commentDto,
+                bookings.get(0).getBooker(),
+                bookings.get(0).getItem());
         return CommentMapper.commentToDto(commentRepository.save(comment));
     }
 }

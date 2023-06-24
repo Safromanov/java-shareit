@@ -1,18 +1,23 @@
 package ru.practicum.shareit.booking.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public interface BookingGetResponse {
+@AllArgsConstructor
+@Getter
+public class BookingGetResponse {
 
-    Long getId();
+//    Long getId();
+//
+//    @Value("#{target.item.id}")
+//    @JsonInclude
+//    Long getItemId();
+//
+//    @Value("#{target.booker.id}")
+//    @JsonProperty("bookerId")
+//    Long getBookerId();
 
-    @Value("#{target.item.id}")
-    @JsonInclude
-    Long getItemId();
-
-    @Value("#{target.booker.id}")
-    @JsonProperty("bookerId")
-    Long getBookerId();
+    private final Long id;
+    private final Long itemId;
+    private final Long bookerId;
 }

@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 import ru.practicum.shareit.user.service.UserServiceImpl;
@@ -24,11 +25,13 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-    private final EasyRandom generator = new EasyRandom();
+
     @Mock
     private UserRepository mockUserRepository;
     @InjectMocks
     private UserServiceImpl userService;
+    private final EasyRandom generator = new EasyRandom();
+    private final User user = generator.nextObject(User.class);
     private static final int PAGE_SIZE = 10;
 
     @Test
@@ -46,8 +49,6 @@ class UserServiceTest {
 
     @Test
     void getById() {
-        User user = generator.nextObject(User.class);
-
         when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
 
@@ -63,16 +64,15 @@ class UserServiceTest {
 
     @Test
     void getAllUsers() {
-        User user1 = generator.nextObject(User.class);
         User user2 = generator.nextObject(User.class);
 
-        when(mockUserRepository.findAll(PageRequest.of(0, PAGE_SIZE)))
-                .thenReturn(new PageImpl<>(List.of(user1, user2)));
+        when(mockUserRepository.findAll(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(user, user2)));
 
         List<UserDto> foundList = userService.getAllUsers(0, PAGE_SIZE);
 
         assertThat(foundList).hasSize(2);
-        assertEquals(UserMapper.toUserDto(user1), foundList.get(0));
+        assertEquals(UserMapper.toUserDto(user), foundList.get(0));
         assertEquals(UserMapper.toUserDto(user2), foundList.get(1));
         verify(mockUserRepository, times(1))
                 .findAll(PageRequest.of(0, PAGE_SIZE));
@@ -80,13 +80,9 @@ class UserServiceTest {
 
     @Test
     void delete_whenUserExist() {
-        User user = generator.nextObject(User.class);
-
         when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-
         userService.deleteUserById(generator.nextLong());
-
         verify(mockUserRepository, times(1)).findById(anyLong());
         verify(mockUserRepository, times(1)).delete(any(User.class));
     }
@@ -95,7 +91,6 @@ class UserServiceTest {
     void delete_whenUserDontExist() {
         when(mockUserRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
-
         assertThrows(NotFoundException.class,
                 () -> userService.deleteUserById(generator.nextLong()));
 
@@ -105,7 +100,6 @@ class UserServiceTest {
 
     @Test
     void updateUser() {
-        User user = generator.nextObject(User.class);
         UserDto expectedUserDto = UserMapper.toUserDto(user);
 
         when(mockUserRepository.findById(anyLong()))
@@ -125,19 +119,18 @@ class UserServiceTest {
 
     @Test
     void updateUser_withRepeatedEmail() {
-        User user1 = generator.nextObject(User.class);
         User user2 = generator.nextObject(User.class);
-        user2.setEmail(user1.getEmail());
-        UserDto expectedUserDto = UserMapper.toUserDto(user1);
+        user2.setEmail(user.getEmail());
+        UserDto expectedUserDto = UserMapper.toUserDto(user);
 
         when(mockUserRepository.findById(anyLong()))
-                .thenReturn(Optional.of(user1));
+                .thenReturn(Optional.of(user));
 
         when(mockUserRepository.findByEmail(anyString()))
                 .thenReturn(Optional.of(user2));
 
         assertThrows(AlreadyExistException.class,
-                () -> userService.updateUser(expectedUserDto, user1.getId()));
+                () -> userService.updateUser(expectedUserDto, user.getId()));
 
         verify(mockUserRepository, times(1)).findByEmail(anyString());
         verify(mockUserRepository, times(1)).findById(anyLong());
