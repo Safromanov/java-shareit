@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,14 +28,12 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "booker_id")
     private User booker;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "booking_status")
     private Status status;
     @Column(name = "booking_start")
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime start;
     @Column(name = "booking_end")
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime end;
 
     public Booking(Item item, User booker, Status status, LocalDateTime start, LocalDateTime end) {

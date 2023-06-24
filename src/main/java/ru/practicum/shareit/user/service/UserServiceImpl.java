@@ -16,6 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
@@ -51,7 +52,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public UserDto getById(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
