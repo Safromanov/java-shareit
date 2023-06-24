@@ -71,13 +71,13 @@ class UserControllerTest {
     @Test
     void updateUser() throws Exception {
 
-        UserDto ExpectedUser = new UserDto(userDto.getId(), userDto2.getName(), userDto.getEmail());
+        UserDto expectedUser = new UserDto(userDto.getId(), userDto2.getName(), userDto.getEmail());
         when(userService.updateUser(any(UserDto.class), anyLong()))
-                .thenReturn(ExpectedUser);
+                .thenReturn(expectedUser);
 
         mockMvc.perform(patch("/users/{userId}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(ExpectedUser)))
+                        .content(objectMapper.writeValueAsString(expectedUser)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value((userDto2.getName())))
