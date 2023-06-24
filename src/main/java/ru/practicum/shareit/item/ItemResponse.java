@@ -15,7 +15,4 @@ public interface ItemResponse {
 
     BookingGetResponse getNextBooking();
 
-//    List<CommentDto> getComments();
-
-  //  ItemRequest getItemRequest();
 }
