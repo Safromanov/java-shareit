@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UserServiceIntegrationTest {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
     private final EasyRandom generator = new EasyRandom();
 
     private List<UserDto> expectedListUsers;
