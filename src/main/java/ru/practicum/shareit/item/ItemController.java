@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comment.CommentDto;
@@ -25,7 +24,7 @@ public class ItemController {
     public static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+
     public ItemDto createItem(@RequestBody @Validated({Create.class, Default.class}) ItemDto item,
                               @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.createItem(item, userId);
@@ -57,13 +56,6 @@ public class ItemController {
                               @RequestHeader(USER_ID_HEADER) long userId) {
         return itemService.updateItem(itemDto, itemId, userId);
     }
-
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @DeleteMapping("/{itemId}")
-//    public void deleteUserById(@PathVariable long itemId,
-//                               @RequestHeader(USER_ID_HEADER) long userId) {
-//        itemService.deleteItemById(itemId);
-//    }
 
     @PostMapping("{itemId}/comment")
     public CommentDto addComment(@RequestHeader(USER_ID_HEADER) Long userId,

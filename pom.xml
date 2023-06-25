@@ -94,7 +94,6 @@
             </resource>
         </resources>
         <plugins>
-
             <plugin>
                 <groupId>com.mysema.maven</groupId>
                 <artifactId>apt-maven-plugin</artifactId>
