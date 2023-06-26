@@ -6,15 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ResponseItemRequest;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -26,17 +28,17 @@ class ItemRequestServiceImplTest {
     private UserRepository userRepository;
 
     private final EasyRandom generator = new EasyRandom();
-    private User user;
+    private User requestor;
 
-    ResponseItemRequest responseItemRequest;
+    private ResponseItemRequest responseItemRequest;
 
     @BeforeEach
     public void setUp() {
-        user = generator.nextObject(User.class);
-        user.setEmail("email@Test.ru");
-        user = userRepository.save(user);
+        requestor = generator.nextObject(User.class);
+        requestor.setEmail("email@Test.ru");
+        requestor = userRepository.save(requestor);
         responseItemRequest =
-                itemRequestService.createItemRequest(user.getId(), generator.nextObject(ItemRequestDto.class));
+                itemRequestService.createItemRequest(requestor.getId(), generator.nextObject(ItemRequestDto.class));
     }
 
     @Test
@@ -47,16 +49,18 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getRequests() {
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequests(0, 0, 10));
         List<ResponseItemRequest> responseItemRequestList = List.of(
-                itemRequestService.createItemRequest(user.getId(), generator.nextObject(ItemRequestDto.class)),
-                itemRequestService.createItemRequest(user.getId(), generator.nextObject(ItemRequestDto.class)));
-        List<ResponseItemRequest> responseItemRequestListActual = itemRequestService.getRequests(user.getId(), 0, 10);
+                itemRequestService.createItemRequest(requestor.getId(), generator.nextObject(ItemRequestDto.class)),
+                itemRequestService.createItemRequest(requestor.getId(), generator.nextObject(ItemRequestDto.class)));
+        List<ResponseItemRequest> responseItemRequestListActual = itemRequestService.getRequests(requestor.getId(), 0, 10);
         assertThat(responseItemRequestListActual.size()).isEqualTo(responseItemRequestList.size() + 1);
         assertThat(responseItemRequestListActual.get(0).getId()).isEqualTo(responseItemRequest.getId());
     }
 
     @Test
     void getOtherUsersRequests() {
+        assertThrows(NotFoundException.class, () -> itemRequestService.getOtherUsersRequests(0, 0, 10));
         User user2 = generator.nextObject(User.class);
         user2.setEmail("email2@Test.ru");
         user2 = userRepository.save(user2);
@@ -71,7 +75,7 @@ class ItemRequestServiceImplTest {
                 itemRequestService.createItemRequest(user3.getId(), generator.nextObject(ItemRequestDto.class))
         );
 
-        List<ResponseItemRequest> responseItemRequestListActual = itemRequestService.getOtherUsersRequests(user.getId(), 0, 10);
+        List<ResponseItemRequest> responseItemRequestListActual = itemRequestService.getOtherUsersRequests(requestor.getId(), 0, 10);
 
         assertThat(responseItemRequestListActual.size()).isEqualTo(responseItemRequestList.size());
         assertThat(responseItemRequestListActual.get(0).getId()).isEqualTo(responseItemRequestList.get(0).getId());
@@ -79,8 +83,14 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getItemRequest() {
+        assertThrows(NotFoundException.class, () ->
+                itemRequestService.getItemRequest(0, responseItemRequest.getId()));
+
+        assertThrows(NotFoundException.class, () ->
+                itemRequestService.getItemRequest(requestor.getId(), responseItemRequest.getId() + 1));
+
         ResponseItemRequest responseItemRequestActual =
-                itemRequestService.getItemRequest(user.getId(), responseItemRequest.getId());
+                itemRequestService.getItemRequest(requestor.getId(), responseItemRequest.getId());
         assertThat(responseItemRequestActual.getId()).isEqualTo(responseItemRequest.getId());
         assertNotNull(responseItemRequest.getCreated());
     }

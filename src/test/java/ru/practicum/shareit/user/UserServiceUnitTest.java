@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.util.List;

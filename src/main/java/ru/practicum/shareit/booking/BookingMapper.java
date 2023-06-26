@@ -8,8 +8,8 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemMapper;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.user.model.User;
 
 @RequiredArgsConstructor
 public class BookingMapper {

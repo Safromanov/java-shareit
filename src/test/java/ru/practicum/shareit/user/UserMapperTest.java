@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
+import ru.practicum.shareit.user.model.User;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

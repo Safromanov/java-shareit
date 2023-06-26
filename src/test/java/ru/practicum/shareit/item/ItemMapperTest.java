@@ -4,8 +4,8 @@ import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 import ru.practicum.shareit.booking.dto.BookingGetResponse;
 import ru.practicum.shareit.comment.CommentMapper;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.stream.Collectors;
 

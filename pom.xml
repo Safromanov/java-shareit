@@ -181,6 +181,7 @@
                         <output>file</output>
                         <excludes>
                             <exclude>ru/practicum/shareit/errorHandler/*</exclude>
+                            <exclude>ru/practicum/shareit/*/*/Q*</exclude>
                         </excludes>
                     </configuration>
                     <executions>

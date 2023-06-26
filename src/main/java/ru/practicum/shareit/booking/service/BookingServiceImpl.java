@@ -21,8 +21,8 @@ import ru.practicum.shareit.errorHandler.exception.IncorrectUserException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
