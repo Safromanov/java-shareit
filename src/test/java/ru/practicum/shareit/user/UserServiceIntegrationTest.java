@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,34 +16,32 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceIntegrationTest {
 
     @Autowired
     private UserServiceImpl userService;
-    private final EasyRandom generator = new EasyRandom();
 
     private List<UserDto> expectedListUsers;
 
     @BeforeEach
-    public void createUsers() {
+    void createUsers() {
         expectedListUsers = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            UserDto userDto = generator.nextObject(UserDto.class);
-            userDto.setEmail("test" + i + "@test.oki");
+            UserDto userDto = new UserDto(i, "name" + i, "test" + i + "@test.oki");
             expectedListUsers.add(userDto);
             userService.createUser(userDto);
         }
     }
 
     @Test
-    public void testGetUser() {
+    void testGetUser() {
         assertEquals(expectedListUsers.get(1), userService.getById(2));
         assertThrows(NotFoundException.class, () -> userService.getById(expectedListUsers.size() + 1));
     }
 
     @Test
-    public void testUpdateUser() {
+    void testUpdateUser() {
         var updateUser = expectedListUsers.get(0);
         updateUser.setEmail("update@update");
         assertEquals(updateUser,
@@ -59,13 +56,13 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void testDeleteUserById() {
+    void testDeleteUserById() {
         userService.deleteUserById(1);
         assertThrows(NotFoundException.class, () -> userService.getById(1));
     }
 
     @Test
-    public void testGetAllUsers() {
+    void testGetAllUsers() {
         assertEquals(expectedListUsers,
                 userService.getAllUsers(0, 10));
 

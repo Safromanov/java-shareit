@@ -39,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingResponse booking(BookingPostRequest bookingReq, long bookerId) {
-        if (!bookingReq.getEnd().isAfter(bookingReq.getStart()))
+        if (!bookingReq.getEnd().isAfter(bookingReq.getStart()) && bookingReq.getStart().isAfter(LocalDateTime.now()))
             throw new BadRequestException("Incorrect time of end booking");
 
         Booking booking = BookingMapper
@@ -80,7 +80,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingResponse> getAllBookingForUser(long userId, State state, int from, int size) {
+    public List<BookingResponse> getAllBookingForBooker(long userId, State state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
         BooleanExpression exp = qBooking.booker.id.eq(userId);

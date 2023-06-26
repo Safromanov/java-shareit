@@ -105,7 +105,7 @@ class BookingControllerTest {
 
     @Test
     void getAllBookingByBooker() throws Exception {
-        when(bookingService.getAllBookingForUser(anyLong(), any(State.class), anyInt(), anyInt()))
+        when(bookingService.getAllBookingForBooker(anyLong(), any(State.class), anyInt(), anyInt()))
                 .thenReturn(bookingResponseList);
         mockMvc.perform(get("/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
