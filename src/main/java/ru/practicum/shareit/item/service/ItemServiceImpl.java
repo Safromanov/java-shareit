@@ -81,10 +81,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemDto> getAllItemsByUserId(long idOwner, int from, int size) {
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         QBooking qBooking = QBooking.booking;
-
-        List<Item> items = itemRepository.findAllByOwnerId(idOwner, page).getContent();
+        List<Item> items = itemRepository.findAllByOwnerId(idOwner, getPageRequest(from, size)).getContent();
         List<BookingGetResponse> lastBookingsOfOwner = StreamUtils.createStreamFromIterator(
                         bookingRepository.findAll(qBooking.item.owner.id.eq(idOwner)
                                         .and(qBooking.start.before(LocalDateTime.now())),
@@ -139,8 +137,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemDto> findByItemNameOrDesc(String str, int from, int size) {
         if (str.isBlank()) return new ArrayList<>();
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        return itemRepository.findByNameOrDescription(str, page)
+        return itemRepository.findByNameOrDescription(str, getPageRequest(from, size))
                 .stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
@@ -164,5 +161,9 @@ public class ItemServiceImpl implements ItemService {
                 bookings.get(0).getBooker(),
                 bookings.get(0).getItem());
         return CommentMapper.commentToDto(commentRepository.save(comment));
+    }
+
+    private PageRequest getPageRequest(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 }

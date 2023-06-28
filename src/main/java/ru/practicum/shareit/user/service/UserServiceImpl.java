@@ -72,6 +72,10 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<UserDto> getAllUsers(int from, int size) {
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        return userRepository.findAll(page).map(UserMapper::toUserDto).getContent();
+        return userRepository.findAll(getPageRequest(from, size)).map(UserMapper::toUserDto).getContent();
+    }
+
+    private PageRequest getPageRequest(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 }

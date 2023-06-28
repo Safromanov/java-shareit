@@ -100,8 +100,7 @@ public class BookingServiceImpl implements BookingService {
                                                   State state,
                                                   QBooking qBooking,
                                                   LocalDateTime currentTime, int from, int size) {
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size,
-                Sort.by("start").descending());
+        PageRequest page = getPageRequest(from, size).withSort(Sort.by("start").descending());
 
         switch (state) {
             case PAST:
@@ -141,5 +140,9 @@ public class BookingServiceImpl implements BookingService {
     private User getBooker(long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
+    }
+
+    private PageRequest getPageRequest(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 }

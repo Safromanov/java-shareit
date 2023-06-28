@@ -34,8 +34,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ResponseItemRequest> getRequests(long userId, int from, int size) {
         userRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        return requestRepo.findByRequestorId(userId, page).stream()
+        return requestRepo.findByRequestorId(userId, getPageRequest(from, size)).stream()
                 .map(ItemRequestMapper::toResponseItemReq)
                 .collect(Collectors.toList());
     }
@@ -44,8 +43,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ResponseItemRequest> getOtherUsersRequests(long userId, int from, int size) {
         userRepo.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
-        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
-        return requestRepo.findByRequestorIdNot(userId, page)
+        return requestRepo.findByRequestorIdNot(userId, getPageRequest(from, size))
                 .map(ItemRequestMapper::toResponseItemReq)
                 .getContent();
     }
@@ -57,5 +55,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         ItemRequest request = requestRepo.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("You do not have permission to perform this operation"));
         return ItemRequestMapper.toResponseItemReq(request);
+    }
+
+    private PageRequest getPageRequest(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 }
