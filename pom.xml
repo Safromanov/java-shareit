@@ -229,7 +229,7 @@
                                             <limit>
                                                 <counter>CLASS</counter>
                                                 <value>MISSEDCOUNT</value>
-                                                <maximum>5</maximum>
+                                                <maximum>1</maximum>
                                                 <!--                                                я не понимаю про тесты каких классов он говорит=(((-->
                                             </limit>
                                         </limits>

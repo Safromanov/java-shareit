@@ -35,5 +35,4 @@ class BookingPostRequestTest {
         assertThat(result.getStart()).isEqualTo(bookingPostRequest.getStart().format(formatter));
         assertThat(result.getEnd()).isEqualTo(bookingPostRequest.getEnd().format(formatter));
     }
-
 }

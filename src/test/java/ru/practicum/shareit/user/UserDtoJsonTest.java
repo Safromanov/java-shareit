@@ -19,7 +19,7 @@ public class UserDtoJsonTest {
     private final ObjectMapper objectMapper;
 
     @Test
-    void testUserDto() throws Exception {
+    void testSerialize() throws Exception {
         UserDto userDto = new UserDto(
                 1,
                 "test",

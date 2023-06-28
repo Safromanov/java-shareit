@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users
     CONSTRAINT pk_users PRIMARY KEY (user_id)
 );
 
-CREATE TABLE IF NOT EXISTS ITEM_REQUEST
+CREATE TABLE IF NOT EXISTS item_requests
 (
     request_id BIGINT AUTO_INCREMENT NOT NULL,
     description     VARCHAR(255),
@@ -22,13 +22,9 @@ CREATE TABLE IF NOT EXISTS items
     description     VARCHAR(255),
     available       BOOLEAN                                 NOT NULL,
     owner_id        BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
-    item_request_id BIGINT REFERENCES item_request(request_id),
+    item_request_id BIGINT REFERENCES item_requests(request_id),
     CONSTRAINT pk_items PRIMARY KEY (item_id)
 );
-
-
-
-
 
 CREATE TABLE IF NOT EXISTS comments
 (
@@ -38,18 +34,6 @@ CREATE TABLE IF NOT EXISTS comments
     item_id        BIGINT REFERENCES items (item_id),
     create_time    TIMESTAMP,
     CONSTRAINT pk_comments PRIMARY KEY (comment_id)
-);
-
-CREATE TABLE IF NOT EXISTS items_item_request
-(
-    item_id        BIGINT NOT NULL REFERENCES items (item_id),
-    item_request_id BIGINT NOT NULL REFERENCES comments (comment_id)
-);
-
-CREATE TABLE IF NOT EXISTS items_comments
-(
-    item_item_id        BIGINT NOT NULL REFERENCES items (item_id),
-    comments_comment_id BIGINT NOT NULL REFERENCES comments (comment_id)
 );
 
 CREATE TABLE IF NOT EXISTS bookings

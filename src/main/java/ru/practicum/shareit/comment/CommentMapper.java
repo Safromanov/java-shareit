@@ -14,9 +14,9 @@ public class CommentMapper {
                 comment.getCreated());
     }
 
-    public static Comment commentFromDto(CommentDto commentDto, User commenter, Item item) {
+    public static Comment commentFromDto(CommentDto commentDto, User commentator, Item item) {
         return new Comment(commentDto.getId(),
-                commenter,
+                commentator,
                 commentDto.getText(),
                 item, LocalDateTime.now());
     }
