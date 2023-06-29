@@ -2,18 +2,17 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserDto;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,9 +37,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User ID dont found"));
         if (userDto.getEmail() != null) {
-            if (userRepository.findByEmail(userDto.getEmail()).isPresent()
-                    && !Objects.equals(user.getEmail(), userDto.getEmail()))
-                throw new AlreadyExistException("Email has already been taken");
+            userRepository.findByEmail(userDto.getEmail())
+                    .ifPresent(userWithSameEmail -> {
+                        if (userWithSameEmail.getId() != userId)
+                            throw new AlreadyExistException("Email has already been taken");
+                    });
             user.setEmail(userDto.getEmail());
         }
         if (userDto.getName() != null)
@@ -69,7 +70,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+    public List<UserDto> getAllUsers(int from, int size) {
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        return userRepository.findAll(getPageRequest(from, size)).map(UserMapper::toUserDto).getContent();
+    }
+
+    private PageRequest getPageRequest(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 }

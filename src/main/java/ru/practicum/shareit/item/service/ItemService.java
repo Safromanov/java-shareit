@@ -10,13 +10,11 @@ public interface ItemService {
 
     ItemDto updateItem(ItemDto itemDto, long itemId, long userId);
 
-    void deleteItemById(long id);
-
-    List<ItemDto> getAllItemsByUserId(long idOwner);
+    List<ItemDto> getAllItemsByUserId(long idOwner, int from, int size);
 
     ItemDto getById(long itemId, long userId);
 
-    List<ItemDto> findByItemNameOrDesc(String str);
+    List<ItemDto> findByItemNameOrDesc(String str, int from, int size);
 
     CommentDto addComment(Long userId, Long itemId, CommentDto commentDto);
 }

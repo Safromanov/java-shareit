@@ -1,8 +1,12 @@
 package ru.practicum.shareit.item;
 
-import lombok.*;
-import ru.practicum.shareit.comment.Comment;
-import ru.practicum.shareit.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -32,13 +36,18 @@ public class Item {
     private User owner;
 
     @OneToMany
+    @JoinColumn(name = "comment_id")
     private List<Comment> comments;
 
-    public Item(String name, String description, boolean available, User owner, List<Comment> comments) {
+    @ManyToOne
+    @JoinColumn(name = "item_request_id")
+    private ItemRequest itemRequest;
+
+    public Item(String name, String description, boolean available, User owner, List<Comment> comments, ItemRequest itemRequest) {
         this.name = name;
         this.description = description;
         this.available = available;
         this.owner = owner;
+        this.itemRequest = itemRequest;
     }
-
 }

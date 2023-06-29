@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking.service;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -19,18 +21,15 @@ import ru.practicum.shareit.errorHandler.exception.IncorrectUserException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -40,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingResponse booking(BookingPostRequest bookingReq, long bookerId) {
-        if (!bookingReq.getEnd().isAfter(bookingReq.getStart()))
+        if (!bookingReq.getEnd().isAfter(bookingReq.getStart()) && bookingReq.getStart().isAfter(LocalDateTime.now()))
             throw new BadRequestException("Incorrect time of end booking");
 
         Booking booking = BookingMapper
@@ -51,6 +50,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingResponse getBooking(long bookingId, long userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking dont found"));
@@ -79,25 +79,29 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponse> getAllBookingForUser(long userId, State state) {
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getAllBookingForBooker(long userId, State state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
         BooleanExpression exp = qBooking.booker.id.eq(userId);
-        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now());
+        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now(), from, size);
     }
 
     @Override
-    public List<BookingResponse> getAllBookingByOwner(long userId, State state) {
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getAllBookingsByOwner(long userId, State state, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new IncorrectUserException("User dont exist"));
         QBooking qBooking = QBooking.booking;
         BooleanExpression exp = qBooking.item.owner.id.eq(userId);
-        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now());
+        return getAllBookingBy(exp, state, qBooking, LocalDateTime.now(), from, size);
     }
 
     private List<BookingResponse> getAllBookingBy(BooleanExpression exp,
                                                   State state,
                                                   QBooking qBooking,
-                                                  LocalDateTime currentTime) {
+                                                  LocalDateTime currentTime, int from, int size) {
+        PageRequest page = getPageRequest(from, size).withSort(Sort.by("start").descending());
+
         switch (state) {
             case PAST:
                 exp = exp.and(qBooking.end.before(currentTime));
@@ -118,10 +122,7 @@ public class BookingServiceImpl implements BookingService {
             case ALL:
                 break;
         }
-        return ((Collection<Booking>) bookingRepository
-                .findAll(exp))
-                .stream().sorted((x, y) -> -x.getStart().compareTo(y.getStart())).map(BookingMapper::toBookingResponse)
-                .collect(Collectors.toList());
+        return bookingRepository.findAll(exp, page).map(BookingMapper::toBookingResponse).getContent();
     }
 
 
@@ -139,5 +140,9 @@ public class BookingServiceImpl implements BookingService {
     private User getBooker(long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User dont found"));
+    }
+
+    private PageRequest getPageRequest(int from, int size) {
+        return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 }

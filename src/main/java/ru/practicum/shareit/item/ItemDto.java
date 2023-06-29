@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @Builder
 @AllArgsConstructor
 public class ItemDto {
@@ -27,4 +27,5 @@ public class ItemDto {
     private BookingGetResponse lastBooking;
     private BookingGetResponse nextBooking;
     private List<CommentDto> comments;
+    private Long requestId;
 }

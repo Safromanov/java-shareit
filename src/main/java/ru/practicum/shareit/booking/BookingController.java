@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingPostRequest;
 import ru.practicum.shareit.booking.dto.BookingResponse;
@@ -8,20 +10,21 @@ import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
-/**
- * TODO Sprint add-bookings.
- */
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Validated
 public class BookingController {
 
     private final BookingService bookingService;
     public static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public BookingResponse booking(@Valid @RequestBody BookingPostRequest booking,
                                    @RequestHeader(USER_ID_HEADER) long ownerId) {
         return bookingService.booking(booking, ownerId);
@@ -34,22 +37,25 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingResponse a(@PathVariable long bookingId,
-                             @RequestParam(value = "approved", required = false) boolean approved,
-                             @RequestHeader(USER_ID_HEADER) long ownerId) {
+    public BookingResponse approveBooking(@PathVariable long bookingId,
+                                          @RequestParam(value = "approved", required = false) boolean approved,
+                                          @RequestHeader(USER_ID_HEADER) long ownerId) {
         return bookingService.approveBooking(bookingId, ownerId, approved);
     }
 
     @GetMapping("/owner")
-    public List<BookingResponse> getAllBookingByOwner(@RequestHeader(USER_ID_HEADER) long ownerId,
-                                                      @RequestParam(defaultValue = "ALL") State state) {
-        return bookingService.getAllBookingByOwner(ownerId, state);
+    public List<BookingResponse> getAllBookingsByOwner(@RequestHeader(USER_ID_HEADER) long ownerId,
+                                                       @RequestParam(defaultValue = "ALL") State state,
+                                                       @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                       @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+        return bookingService.getAllBookingsByOwner(ownerId, state, from, size);
     }
 
     @GetMapping
     public List<BookingResponse> getAllBookingByBooker(@RequestHeader(USER_ID_HEADER) long bookerId,
-                                                       @RequestParam(defaultValue = "ALL") State state) {
-        return bookingService.getAllBookingForUser(bookerId, state);
+                                                       @RequestParam(defaultValue = "ALL") State state,
+                                                       @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                       @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+        return bookingService.getAllBookingForBooker(bookerId, state, from, size);
     }
-
 }

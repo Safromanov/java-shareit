@@ -1,7 +1,8 @@
 package ru.practicum.shareit.comment;
 
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -13,9 +14,9 @@ public class CommentMapper {
                 comment.getCreated());
     }
 
-    public static Comment commentFromDto(CommentDto commentDto, User commenter, Item item) {
+    public static Comment commentFromDto(CommentDto commentDto, User commentator, Item item) {
         return new Comment(commentDto.getId(),
-                commenter,
+                commentator,
                 commentDto.getText(),
                 item, LocalDateTime.now());
     }
