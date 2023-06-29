@@ -58,7 +58,6 @@ class BookingServiceImplTest {
         BookingPostRequest bookingPostRequest = new BookingPostRequest(LocalDateTime.now(),
                 LocalDateTime.now().plusDays(1), item.getId());
         bookingResponse = bookingService.booking(bookingPostRequest, booker.getId());
-
     }
 
     @Test

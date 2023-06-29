@@ -74,6 +74,10 @@
             <version>5.0.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -181,6 +185,7 @@
                         <output>file</output>
                         <excludes>
                             <exclude>ru/practicum/shareit/errorHandler/*</exclude>
+                            <exclude>ru/practicum/shareit/errorHandler/exception/*</exclude>
                             <exclude>ru/practicum/shareit/*/*/Q*</exclude>
                         </excludes>
                     </configuration>
@@ -285,5 +290,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

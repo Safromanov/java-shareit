@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.errorHandler.exception.AlreadyExistException;
 import ru.practicum.shareit.errorHandler.exception.NotFoundException;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+
 public class UserServiceIntegrationTest {
 
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
 
     private List<UserDto> expectedListUsers;
 

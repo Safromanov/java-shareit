@@ -45,8 +45,8 @@ class ItemRequestControllerTest {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-    ResponseItemRequest responseItemRequest;
-    List<ResponseItemRequest> responseItemRequestList;
+    private ResponseItemRequest responseItemRequest;
+    private List<ResponseItemRequest> responseItemRequestList;
 
     @BeforeEach
     void setUp() {
