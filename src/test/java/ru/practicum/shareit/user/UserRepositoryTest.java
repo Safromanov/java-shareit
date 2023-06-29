@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UserRepositoryTest {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Test
-    public void testFindByEmail() {
+    void testFindByEmail() {
         User user = new User("name", "sin@ge.r");
         userRepository.save(user);
         User user2 = new User("name", "sun@ge.r");

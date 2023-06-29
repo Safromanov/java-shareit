@@ -41,7 +41,7 @@ class ItemRequestControllerTest {
     private EasyRandom generator;
     private final ObjectMapper objectMapper;
 
-    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 

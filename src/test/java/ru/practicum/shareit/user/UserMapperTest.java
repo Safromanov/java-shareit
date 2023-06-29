@@ -12,7 +12,7 @@ public class UserMapperTest {
     private final EasyRandom generator = new EasyRandom();
 
     @Test
-    public void userToDtoTest() {
+    void userToDtoTest() {
         User user = generator.nextObject(User.class);
         UserDto userDto = UserMapper.toUserDto(user);
         assertThat(userDto.getId()).isEqualTo(user.getId());
@@ -21,7 +21,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void userFromDtoTest() {
+    void userFromDtoTest() {
         UserDto userDto = generator.nextObject(UserDto.class);
         User user = UserMapper.toUser(userDto);
         assertThat(user.getName()).isEqualTo(userDto.getName());
