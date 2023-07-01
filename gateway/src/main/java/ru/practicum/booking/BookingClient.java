@@ -14,8 +14,10 @@ import ru.practicum.client.BaseClient;
 
 import java.util.Map;
 //${shareit-server.url}
+
 @Service
 public class BookingClient extends BaseClient {
+
     private static final String API_PREFIX = "/bookings";
 
     @Autowired

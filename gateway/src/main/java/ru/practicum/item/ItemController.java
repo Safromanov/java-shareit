@@ -12,8 +12,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.groups.Default;
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/items")
