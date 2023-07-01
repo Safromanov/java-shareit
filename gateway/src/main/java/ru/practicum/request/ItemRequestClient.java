@@ -32,7 +32,7 @@ public class ItemRequestClient extends BaseClient {
 
     @Cacheable(cacheNames = "ItemRequest")
     public ResponseEntity<Object> createItemRequest(long userId, ItemRequestDto request) {
-        return post("", request);
+        return post("", userId, request);
     }
 
     @Cacheable(cacheNames = "ItemRequest")

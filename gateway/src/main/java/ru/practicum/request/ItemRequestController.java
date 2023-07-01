@@ -47,6 +47,6 @@ public class ItemRequestController {
     @GetMapping(path = "/{requestId}")
     public ResponseEntity<Object> getItemRequest(@RequestHeader(USER_ID_HEADER) Long requesterId,
                                               @PathVariable Long requestId) {
-        return itemRequestClient.getItemRequest(requesterId, requestId);
+        return itemRequestClient.getItemRequest(requestId, requesterId);
     }
 }
