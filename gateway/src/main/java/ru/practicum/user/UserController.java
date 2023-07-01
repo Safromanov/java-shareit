@@ -24,8 +24,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@RequestBody UserDto user,
-                                             @PathVariable long userId) {
+    public ResponseEntity<Object> updateUser(@RequestBody UserDto user, @PathVariable long userId) {
         return userClient.updateUser(user, userId);
     }
 
@@ -41,8 +40,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Object>getAllUsers(@RequestParam(defaultValue = "0") @Min(0) int from,
-                                     @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
+    public ResponseEntity<Object> getAllUsers(@RequestParam(defaultValue = "0") @Min(0) int from, @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
         return userClient.getAllUsers(from, size);
     }
 }
