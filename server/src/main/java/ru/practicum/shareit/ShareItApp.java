@@ -8,7 +8,7 @@ public class ShareItApp {
 
     public static void main(String[] args) {
 
-        //	System.setProperty("server.port", "9090");
+        System.setProperty("server.port", "9090");
         SpringApplication.run(ShareItApp.class, args);
     }
 }
