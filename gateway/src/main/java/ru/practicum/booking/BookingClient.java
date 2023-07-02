@@ -13,7 +13,6 @@ import ru.practicum.booking.dto.BookingPostRequest;
 import ru.practicum.client.BaseClient;
 
 import java.util.Map;
-//${shareit-server.url}
 
 @Service
 public class BookingClient extends BaseClient {
@@ -21,7 +20,7 @@ public class BookingClient extends BaseClient {
     private static final String API_PREFIX = "/bookings";
 
     @Autowired
-    public BookingClient(@Value("http://localhost:9090") String serverUrl, RestTemplateBuilder builder) {
+    public BookingClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
 
@@ -44,7 +43,7 @@ public class BookingClient extends BaseClient {
         return patch("/" + bookingId + "?approved=" + approved, ownerId);
     }
 
-    @CachePut(cacheNames = "booking")
+   // @CachePut(cacheNames = "booking")
     public ResponseEntity<Object> getAllBookingsByOwner(long ownerId, State state, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,
@@ -55,7 +54,7 @@ public class BookingClient extends BaseClient {
     }
 
 
-    @Cacheable(cacheNames = "booking")
+   // @Cacheable(cacheNames = "booking")
     public ResponseEntity<Object> getAllBookingForBooker(long bookerId, State state, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "state", state,

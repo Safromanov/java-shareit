@@ -82,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemDto> getAllItemsByUserId(long idOwner, int from, int size) {
         QBooking qBooking = QBooking.booking;
-        List<Item> items = itemRepository.findAllByOwnerId(idOwner, getPageRequest(from, size)).getContent();
+        List<Item> items = itemRepository.findAllByOwnerId(idOwner, getPageRequest(from, size).withSort(Sort.by("id"))).getContent();
         List<BookingGetResponse> lastBookingsOfOwner = StreamUtils.createStreamFromIterator(
                         bookingRepository.findAll(qBooking.item.owner.id.eq(idOwner)
                                         .and(qBooking.start.before(LocalDateTime.now())),

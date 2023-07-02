@@ -18,7 +18,7 @@ public class ItemRequestClient extends BaseClient {
     private static final String API_PREFIX = "/requests";
 
     @Autowired
-    public ItemRequestClient(@Value("http://localhost:9090") String serverUrl, RestTemplateBuilder builder) {
+    public ItemRequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
@@ -27,12 +27,12 @@ public class ItemRequestClient extends BaseClient {
         );
     }
 
-    @Cacheable(cacheNames = "ItemRequest")
+  ///  @Cacheable(cacheNames = "ItemRequest")
     public ResponseEntity<Object> createItemRequest(long userId, ItemRequestDto request) {
         return post("", userId, request);
     }
 
-    @Cacheable(cacheNames = "ItemRequest")
+  //  @Cacheable(cacheNames = "ItemRequest")
     public ResponseEntity<Object> getRequests(Long userId, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
@@ -41,7 +41,7 @@ public class ItemRequestClient extends BaseClient {
         return get("?from={from}&size={size}", userId, parameters);
     }
 
-    @Cacheable(cacheNames = "ItemRequest")
+  //  @Cacheable(cacheNames = "ItemRequest")
     public ResponseEntity<Object> getOtherUsersRequests(Long userId, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
@@ -50,7 +50,7 @@ public class ItemRequestClient extends BaseClient {
         return get("/all?from={from}&size={size}", userId, parameters);
     }
 
-    @Cacheable(cacheNames = "ItemRequest")
+  //  @Cacheable(cacheNames = "ItemRequest")
     public ResponseEntity<Object> getItemRequest(long itemRequestId, long userId) {
         return get("/" + itemRequestId, userId);
     }
