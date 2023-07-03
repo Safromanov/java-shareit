@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.booking.dto.BookingPostRequest;
-import ru.practicum.errorHandler.BadRequestException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -46,26 +45,14 @@ public class BookingController {
                                                         @RequestParam(defaultValue = "ALL") String state,
                                                         @RequestParam(defaultValue = "0") @Min(0) int from,
                                                         @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
-        State stateEnum;
-        try {
-            stateEnum = State.valueOf(state);
-        } catch (Exception e) {
-            throw new BadRequestException("Unknown state: " + state);
-        }
-        return bookingClient.getAllBookingsByOwner(ownerId, stateEnum, from, size);
+        return bookingClient.getAllBookingsByOwner(ownerId, State.fromString(state), from, size);
     }
 
     @GetMapping
     public ResponseEntity<Object> getAllBookingByBooker(@RequestHeader(USER_ID_HEADER) long bookerId,
-                                                        @RequestParam(defaultValue = "ALL") State state,
+                                                        @RequestParam(defaultValue = "ALL") String state,
                                                         @RequestParam(defaultValue = "0") @Min(0) int from,
                                                         @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
-        State stateEnum;
-//        try {
-//            stateEnum = State.valueOf(state);
-//        } catch (Exception e) {
-//            throw new BadRequestException("Unknown state: " + state);
-//        }
-        return bookingClient.getAllBookingForBooker(bookerId, state, from, size);
+        return bookingClient.getAllBookingForBooker(bookerId, State.fromString(state), from, size);
     }
 }
