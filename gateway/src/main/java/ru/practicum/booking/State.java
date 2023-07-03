@@ -2,9 +2,6 @@ package ru.practicum.booking;
 
 import ru.practicum.errorHandler.BadRequestException;
 
-import java.util.stream.Stream;
-
-
 public enum State {
     ALL, CURRENT, PAST, FUTURE, WAITING, REJECTED;
 
