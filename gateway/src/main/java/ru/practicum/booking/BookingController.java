@@ -57,15 +57,15 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<Object> getAllBookingByBooker(@RequestHeader(USER_ID_HEADER) long bookerId,
-                                                        @RequestParam(defaultValue = "ALL") String state,
+                                                        @RequestParam(defaultValue = "ALL") State state,
                                                         @RequestParam(defaultValue = "0") @Min(0) int from,
                                                         @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
         State stateEnum;
-        try {
-            stateEnum = State.valueOf(state);
-        } catch (Exception e) {
-            throw new BadRequestException("Unknown state: " + state);
-        }
-        return bookingClient.getAllBookingForBooker(bookerId, stateEnum, from, size);
+//        try {
+//            stateEnum = State.valueOf(state);
+//        } catch (Exception e) {
+//            throw new BadRequestException("Unknown state: " + state);
+//        }
+        return bookingClient.getAllBookingForBooker(bookerId, state, from, size);
     }
 }

@@ -1,8 +1,27 @@
 package ru.practicum.booking;
 
-public enum State {
-    ALL("ALL"), CURRENT("CURRENT"), PAST("PAST"), FUTURE("FUTURE"), WAITING("WAITING"), REJECTED("REJECTED");
+import ru.practicum.errorHandler.BadRequestException;
 
-    State(String str) {
+
+public enum State {
+    ALL, CURRENT, PAST, FUTURE, WAITING, REJECTED;
+
+    public static State fromString(String state) {
+        switch (state.toUpperCase()) {
+            case "ALL":
+                return ALL;
+            case "CURRENT":
+                return CURRENT;
+            case "PAST":
+                return PAST;
+            case "FUTURE":
+                return FUTURE;
+            case "WAITING":
+                return WAITING;
+            case "REJECTED":
+                return REJECTED;
+            default:
+                throw new BadRequestException("Unknown state: " + state);
+        }
     }
 }
